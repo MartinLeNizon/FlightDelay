@@ -1,3 +1,4 @@
-"data/Airline Delay Data (+Weather)/DelayData.csv"
-"data/Flight Delay and Cancellation Dataset/flights_sample_3m.csv"
-"data/Largest Cities US Weather/largest_us_cities_weatherdata_2020_2023.csv"
+# Ignore specific large CSV files
+data/Airline\ Delay\ Data\ (+Weather)/DelayData.csv
+data/Flight\ Delay\ and\ Cancellation\ Dataset/flights_sample_3m.csv
+data/Largest\ Cities\ US\ Weather/largest_us_cities_weatherdata_2020_2023.csv
