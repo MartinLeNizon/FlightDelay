@@ -6,6 +6,13 @@ Project [DATA Engineering](https://www.riccardotommasini.com/courses/dataeng-ins
 
 Students: **Jean-Christophe Schmitt & Martin Nizon-Deladoeuille**
 
+### Usage
+
+`python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt`
+
+
 ### Abstract
 
 ## Datasets Description 
