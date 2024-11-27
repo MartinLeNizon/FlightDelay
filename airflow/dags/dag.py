@@ -1,49 +1,60 @@
-import airflow
-import datetime
+from datetime import datetime, timedelta
 from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.python_operator import PythonOperator
 
-default_args_dict = {
-    'start_date': airflow.utils.dates.days_ago(0),
-    'concurrency': 1,
-    'schedule_interval': None,
+# Default arguments for the DAG
+default_args = {
+    'owner': 'airflow',
+    'depends_on_past': False,
+    'email_on_failure': False,
+    'email_on_retry': False,
     'retries': 1,
-    'retry_delay': datetime.timedelta(minutes=5),
+    'retry_delay': timedelta(minutes=5),
 }
 
-first_dag = DAG(
-    dag_id='first_dag_stub',
-    default_args=default_args_dict,
-    catchup=False,
-)
+# Define the DAG
+with DAG(
+    dag_id='daily_flight_weather_ingestion',
+    default_args=default_args,
+    description='DAG for ingesting flight and weather data daily at 4 PM',
+    schedule_interval='0 16 * * *',  # Cron expression for 4 PM daily
+    start_date=datetime(2024, 1, 1),  # Adjust the start_date to your needs
+    catchup=False,  # Prevent backfilling of DAG runs
+    tags=['ingestion', 'flights', 'weather'],
+) as dag:
 
-task_one = DummyOperator(
-    task_id='get_spreadsheet',
-    dag=first_dag
-)
+    # Dummy task to represent the start of the pipeline
+    start_task = DummyOperator(
+        task_id='start_pipeline',
+    )
 
-task_two = DummyOperator(
-    task_id='transmute_to_csv',
-    dag=first_dag)
+    # Define Python functions for data ingestion (placeholders)
+    def ingest_flight_data(**kwargs):
+        # Placeholder function for flight data ingestion
+        # TODO: Implement REST API call to fetch flight data
+        pass
 
-task_three = DummyOperator(
-    task_id='time_filter',
-    dag=first_dag
-)
+    def ingest_weather_data(**kwargs):
+        # Placeholder function for weather data ingestion
+        # TODO: Implement REST API call to fetch weather data
+        pass
 
-task_four = DummyOperator(
-    task_id='load',
-    dag=first_dag
-)
+    # PythonOperator tasks for ingesting flight and weather data
+    ingest_flight_task = PythonOperator(
+        task_id='ingest_flight_data',
+        python_callable=ingest_flight_data,
+    )
 
+    ingest_weather_task = PythonOperator(
+        task_id='ingest_weather_data',
+        python_callable=ingest_weather_data,
+    )
 
-task_five = DummyOperator(
-    task_id='cleanup',
-    dag=first_dag)
+    # Dummy task to represent the end of the pipeline
+    end_task = DummyOperator(
+        task_id='end_pipeline',
+    )
 
-
-task_one >> task_two >> task_three >> task_four >> task_five
-
-
-
+    # Set up task dependencies
+    start_task >> [ingest_flight_task, ingest_weather_task] >> end_task
