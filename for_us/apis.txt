@@ -1,0 +1,7 @@
+# All API credentials are encoded
+
+https://developer.flightstats.com/ (Application under review)
+App_id: ZDNkZWE1Y2U=
+App_key: Yzg4YTE1YjQ4M2E1NTc5YWZlNmQ1ODQxODE3ODc0NGU=
+
+https://aviationstack.com/ key:ODA1NGU5OTI1OGYwY2U5YzU2Y2YwZmQ3ZWMzOTc1ZmE=
