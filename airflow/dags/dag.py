@@ -5,6 +5,15 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.utils.task_group import TaskGroup
 
+import os
+
+# =================== Global Definitions ===================
+
+INGESTION_DATA_PATH = 'data/ingestion/'
+
+
+# =========================================================
+
 # =================== Global DAG definition ===================
 
 # Default arguments for the DAG
@@ -34,9 +43,49 @@ global_dag = DAG(
 # Define Python functions for data ingestion (placeholders)
 def ingest_flight_data(**kwargs):
     # Placeholder function for flight data ingestion
-    # TODO: Implement REST API call to fetch flight data
 
-    
+    try: 
+        import json
+        ''' Production mode
+        import requests
+
+        api_key_path = '../.aviationedge/api.txt'
+        output_file_path = '/tmp/flight_data.json'  # Temporary location to store fetched data
+        # Read the API key
+        with open(api_key_path, 'r') as f:
+            api_key = f.read().strip()
+
+        # Define the API URL
+        api_url = f'https://aviation-edge.com/v2/public/flightsHistory?key={api_key}&code=LYS&type=departure&date_from=2025-01-01&date_to=2025-01-02'
+
+        # Fetch data from the API
+        response = requests.get(api_url)
+        response.raise_for_status()  # Raise an error for bad status codes
+
+        # Parse the JSON response
+        flight_data = response.json()
+        print(f"Fetched {len(flight_data)} records from the API.")
+
+        # -------- '''
+
+        # Developer mode
+        local_file_path = '.aviationedge/example_output.json'
+        output_file_path = f'{INGESTION_DATA_PATH}flight_data.json'  # Temporary location to store fetched data
+
+        with open(local_file_path, 'r') as f:
+            flight_data = json.load(f)
+        print(f"Loaded {len(flight_data)} records from the local JSON file.")
+        # -------
+
+        # Write the fetched data to a temporary output file
+        with open(output_file_path, 'w') as f:
+            json.dump(flight_data, f, indent=4)
+
+        print(f"Flight data saved to {output_file_path}")
+
+    except Exception as e:
+        print(f"Error while ingesting flight data: {e}")
+        raise
 
     pass
 

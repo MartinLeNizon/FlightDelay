@@ -15,10 +15,7 @@ if %ERRORLEVEL% EQU 0 (
     docker compose up
 
     if %ERRORLEVEL% EQU 0 (
-        echo Docker Compose Up succeeded. Waiting 30 seconds before opening localhost:8080 in the default browser...
-        timeout /t 30 >nul
-        echo Opening localhost:8080 in the default browser...
-        start http://localhost:8080
+        echo Done.
     ) else (
         echo Docker Compose Up failed. Please check the logs.
         exit /b 1
