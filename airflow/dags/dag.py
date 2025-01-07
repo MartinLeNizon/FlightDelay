@@ -50,7 +50,7 @@ def ingest_flight_data(**kwargs):
         import requests
 
         api_key_path = '../.aviationedge/api.txt'
-        output_file_path = '/tmp/flight_data.json'  # Temporary location to store fetched data
+        output_file_path = f'{INGESTION_DATA_PATH}flight_data.json'  # Temporary location to store fetched data
         # Read the API key
         with open(api_key_path, 'r') as f:
             api_key = f.read().strip()
@@ -87,12 +87,33 @@ def ingest_flight_data(**kwargs):
         print(f"Error while ingesting flight data: {e}")
         raise
 
-    pass
-
 def ingest_weather_data(**kwargs):
-        # Placeholder function for weather data ingestion
-        # TODO: Implement REST API call to fetch weather data
-        pass
+    # Placeholder function for weather data ingestion
+    # TODO: Implement REST API call to fetch weather data
+
+    try:
+        import json
+        import requests
+
+        output_file_path = f'{INGESTION_DATA_PATH}weather_data.json'  # Temporary location to store fetched data
+
+        # Define the API URL
+        api_url = 'https://aviationweather.gov/api/data/metar?ids=LFLL&format=json&taf=false&hours=24&bbox=40%2C-90%2C45%2C-85&date=20250107_170001Z'
+
+        # Fetch data from the API
+        response = requests.get(api_url)
+        response.raise_for_status()  # Raise an error for bad status codes
+
+        # Parse the JSON response
+        weather_data = response.json()
+        print(f"Loaded {len(weather_data)} records from the API.")
+
+        # Write the fetched data to a temporary output file
+        with open(output_file_path, 'w') as f:
+            json.dump(weather_data, f, indent=4)
+    except Exception as e:
+        print(f"Error while ingesting flight data: {e}")
+        raise
 
 # =========================================================
 
