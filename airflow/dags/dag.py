@@ -1,15 +1,16 @@
 from datetime import datetime, timedelta
 import airflow
+import datetime
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
-from airflow.utils.task_group import TaskGroup
+from airflow.providers.postgres.operators.postgres import PostgresOperator
 
-import os
+from airflow.utils.task_group import TaskGroup
 
 # =================== Environment ===================
 
-PRODUCTION_MODE = False
+PRODUCTION_MODE = False     # PLEASE CHANGE WITH CAUTION, CONSUMES API KEY TOKENS
 
 
 # =========================================================
@@ -38,7 +39,7 @@ default_args = {
 
 global_dag = DAG(
     dag_id='daily_flight_weather_ingestion',
-    start_date=datetime(2025, 1, 1),
+    start_date=airflow.utils.dates.days_ago(0),
     default_args=default_args,
     catchup=False,  # Prevent backfilling of DAG runs
 )
@@ -48,9 +49,11 @@ global_dag = DAG(
 
 # =================== Python Functions ===================
 
-# Define Python functions for data ingestion (placeholders)
-def ingest_flight_data(**kwargs):
-    # Placeholder function for flight data ingestion
+def ingest_flight_data(airport_code):
+    """
+    Fetch flight data for a specified airport code from an API in production mode or from a local file in development mode.
+    :param airport_code: The IATA code of the airport (e.g., 'MCO' for Orlando).
+    """
 
     try: 
         import json
@@ -59,13 +62,13 @@ def ingest_flight_data(**kwargs):
             import requests
 
             api_key_path = '../.aviationedge/api.txt'
-            output_file_path = f'{INGESTION_DATA_PATH}flight_data.json'  # Temporary location to store fetched data
+            output_file_path = f'{INGESTION_DATA_PATH}flight_data_{airport_code}.json'  # Temporary location to store fetched data
             # Read the API key
             with open(api_key_path, 'r') as f:
                 api_key = f.read().strip()
 
-            # Define the API URL
-            api_url = f'https://aviation-edge.com/v2/public/flightsHistory?key={api_key}&code=LYS&type=departure&date_from=2025-01-01&date_to=2025-01-02'
+            # TO CHANGE!!!
+            api_url = f'https://aviation-edge.com/v2/public/flightsHistory?key={api_key}&code={airport_code}&type=departure&date_from=2024-12-29&date_to=2025-01-04'
 
             # Fetch data from the API
             response = requests.get(api_url)
@@ -76,8 +79,8 @@ def ingest_flight_data(**kwargs):
             print(f"Fetched {len(flight_data)} records from the API.")
 
         else: # Developer mode
-            local_file_path = '.aviationedge/example_output.json'
-            output_file_path = f'{INGESTION_DATA_PATH}flight_data.json'  # Temporary location to store fetched data
+            local_file_path = f'.aviationedge/response_departure_{airport_code}.json'
+            output_file_path = f'{INGESTION_DATA_PATH}flight_data_{airport_code}.json'  # Temporary location to store fetched data
 
             with open(local_file_path, 'r') as f:
                 flight_data = json.load(f)
@@ -88,12 +91,13 @@ def ingest_flight_data(**kwargs):
             with open(output_file_path, 'w') as f:
                 json.dump(flight_data, f, indent=4)
 
-            print(f"Flight data saved to {output_file_path}")
+            print(f"Flight data of {airport_code} saved to {output_file_path}")
         
 
     except Exception as e:
         print(f"Error while ingesting flight data: {e}")
         raise
+
 
 def ingest_weather_data(**kwargs):
     # Placeholder function for weather data ingestion
@@ -105,8 +109,11 @@ def ingest_weather_data(**kwargs):
 
         output_file_path = f'{INGESTION_DATA_PATH}weather_data.json'  # Temporary location to store fetched data
 
-        # Define the API URL
-        api_url = 'https://aviationweather.gov/api/data/metar?ids=LFLL&format=json&taf=false&hours=24&bbox=40%2C-90%2C45%2C-85&date=20250107_170001Z'
+        if PRODUCTION_MODE:
+            # TO CHANGE!!!
+            api_url = 'https://aviationweather.gov/api/data/metar?ids=KMCO%2CKFLL&format=json&hours=168&date=20250104_235959Z'
+        else:
+            api_url = 'https://aviationweather.gov/api/data/metar?ids=KMCO%2CKFLL&format=json&hours=168&date=20250104_235959Z'
 
         # Fetch data from the API
         response = requests.get(api_url)
@@ -127,16 +134,26 @@ def ingest_weather_data(**kwargs):
 
 
 # =================== Operators Definition ===================
-with TaskGroup("ingestion_pipeline","data ingestion step",dag=global_dag) as ingestion_pipeline:
+with TaskGroup("ingestion_pipeline",dag=global_dag) as ingestion_pipeline:
     start = DummyOperator(
         task_id='start',
         dag=global_dag,
     )
 
-    ingest_flight_task = PythonOperator(
-        task_id='ingest_flight_data',
-        python_callable=ingest_flight_data,
-    )
+    with TaskGroup("ingestion_flights_data",dag=global_dag) as ingest_flight_task:
+
+        ingest_flights_mco = PythonOperator(
+            task_id='ingest_flights_mco_data',
+            dag=global_dag,
+            python_callable=lambda: ingest_flight_data('MCO'),
+        )
+
+        ingest_flights_fll = PythonOperator(
+            task_id='ingest_flights_fll_data',
+            python_callable=lambda: ingest_flight_data('FLL'),
+        )
+
+        ingest_flights_mco >> ingest_flights_fll
 
     ingest_weather_task = PythonOperator(
         task_id='ingest_weather_data',
@@ -152,7 +169,7 @@ with TaskGroup("ingestion_pipeline","data ingestion step",dag=global_dag) as ing
     start >> [ingest_flight_task, ingest_weather_task] >> end
 
 
-with TaskGroup("staging_pipeline","data staging step",dag=global_dag) as staging_pipeline:
+with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
     start = DummyOperator(
         task_id='start',
         dag=global_dag,
