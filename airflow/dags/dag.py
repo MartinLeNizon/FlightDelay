@@ -5,6 +5,7 @@ from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
+from airflow.providers.postgres.hooks.postgres import PostgresHook
 
 from airflow.utils.task_group import TaskGroup
 
@@ -12,15 +13,11 @@ from airflow.utils.task_group import TaskGroup
 
 PRODUCTION_MODE = False     # PLEASE CHANGE WITH CAUTION, CONSUMES API KEY TOKENS
 
-AVIATION_EDGE_API_KEY_PATH = '../.aviationedge/api.txt'
 
-INGESTED_FLIGHTS_PREFIX = 'flight_data_'
+# =================== Credentials ===================
+POSTGRES_CONNECTION_ID = 'postgres_default'
 
-
-# =========================================================
-
-
-# =================== Global Definitions ===================
+# =================== Path ===================
 
 INGESTION_DATA_PATH = 'data/ingestion/'
 STAGING_DATA_PATH = 'data/staging'
@@ -29,6 +26,8 @@ STAGING_DATA_PATH = 'data/staging'
 AVIATION_EDGE_API_KEY_PATH = '../.aviationedge/api.txt'
 
 INGESTED_FLIGHTS_PREFIX = 'flight_data_'
+
+WEATHER_DATA_JSON = 'weather_data.json'
 
 
 # =========================================================
@@ -119,7 +118,7 @@ def ingest_weather_data(**kwargs):
         import json
         import requests
 
-        output_file_path = f'{INGESTION_DATA_PATH}weather_data.json'  # Temporary location to store fetched data
+        output_file_path = f'{INGESTION_DATA_PATH}{WEATHER_DATA_JSON}'
 
         if PRODUCTION_MODE:
             # TO CHANGE!!!
@@ -175,6 +174,71 @@ def clean_flight_data(departure_code, filter_arrival_code):
         print(f"Error while cleaning flight data: {e}")
         raise
 
+# === Parse & Load ===
+
+def load_weather_data():
+    """
+    Parse weather data from JSON and insert it into the PostgreSQL 'weather' table.
+    """
+    try:
+        import json
+        input_file_path = f'{INGESTION_DATA_PATH}{WEATHER_DATA_JSON}'
+
+        # Load JSON data
+        with open(input_file_path, 'r') as f:
+            weather_data = json.load(f)
+
+        # Establish connection to PostgreSQL
+        pg_hook = PostgresHook(postgres_conn_id=POSTGRES_CONNECTION_ID)
+        conn = pg_hook.get_conn()
+        cursor = conn.cursor()
+
+        # Iterate through the JSON data
+        for record in weather_data:
+            raw_ob = record.get("rawOb", "")
+            
+            # Parse rawOb
+            parts = raw_ob.split()
+            if len(parts) < 6:
+                print(f"Skipping invalid record: {raw_ob}")
+                continue
+
+            airport_icao = parts[0]
+            timestamp = parts[1]
+            wind = parts[2]
+            visibility = parts[3]
+            sky_condition = parts[4]
+            temperature = parts[5]
+            altimeter = float(parts[6][1:]) if len(parts) > 6 and parts[6].startswith('A') else None
+
+            
+            insert_query = """
+                INSERT INTO weather (
+                    airport_icao, timestamp, wind
+                )
+                VALUES (%s, %s, %s)
+            """
+            cursor.execute(insert_query, (airport_icao, timestamp, wind))
+
+            
+            # insert_query = """
+            #     INSERT INTO weather (
+            #         airport_icao, timestamp, wind, visibility, sky_condition, temperature, altimeter
+            #     )
+            #     VALUES (%s, %s, %s, %s, %s, %s, %s)
+            # """
+            # cursor.execute(insert_query, (airport_icao, timestamp, wind, visibility, sky_condition, temperature, altimeter))
+
+
+
+        # Commit changes
+        conn.commit()
+        cursor.close()
+        print("Weather data loaded successfully.")
+
+    except Exception as e:
+        print(f"Error loading weather data: {e}")
+        raise
 
 # =========================================================
 
@@ -233,7 +297,7 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
     create_flights_table = PostgresOperator(
         task_id='create_flights_table',
         dag=global_dag,
-        postgres_conn_id='postgres_default',
+        postgres_conn_id=POSTGRES_CONNECTION_ID,
         sql='sql/create_flights_table.sql',
         trigger_rule='none_failed',
         autocommit=True,
@@ -242,10 +306,15 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
     create_weather_table = PostgresOperator(
         task_id='create_weather_table',
         dag=global_dag,
-        postgres_conn_id='postgres_default',
+        postgres_conn_id=POSTGRES_CONNECTION_ID,
         sql='sql/create_weather_table.sql',     # ADAPT THIS FILE, SO THAT ATTRIBUTES ARE ATOMIC
         trigger_rule='none_failed',
         autocommit=True,
+    )
+
+    load_weather_data_postgres = PythonOperator(
+        task_id='load_weather_data',
+        python_callable=load_weather_data,
     )
 
     end = DummyOperator(
@@ -256,6 +325,7 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
 
     start >> [clean_flights_mco, clean_flights_fll, create_weather_table]
     [clean_flights_mco, clean_flights_fll] >> create_flights_table  
+    create_weather_table >> load_weather_data_postgres
     create_flights_table >> end
 
 start = DummyOperator(
