@@ -12,6 +12,10 @@ from airflow.utils.task_group import TaskGroup
 
 PRODUCTION_MODE = False     # PLEASE CHANGE WITH CAUTION, CONSUMES API KEY TOKENS
 
+AVIATION_EDGE_API_KEY_PATH = '../.aviationedge/api.txt'
+
+INGESTED_FLIGHTS_PREFIX = 'flight_data_'
+
 
 # =========================================================
 
@@ -19,6 +23,12 @@ PRODUCTION_MODE = False     # PLEASE CHANGE WITH CAUTION, CONSUMES API KEY TOKEN
 # =================== Global Definitions ===================
 
 INGESTION_DATA_PATH = 'data/ingestion/'
+STAGING_DATA_PATH = 'data/staging'
+
+
+AVIATION_EDGE_API_KEY_PATH = '../.aviationedge/api.txt'
+
+INGESTED_FLIGHTS_PREFIX = 'flight_data_'
 
 
 # =========================================================
@@ -49,6 +59,8 @@ global_dag = DAG(
 
 # =================== Python Functions ===================
 
+# ======== Ingestion ========
+
 def ingest_flight_data(airport_code):
     """
     Fetch flight data for a specified airport code from an API in production mode or from a local file in development mode.
@@ -61,8 +73,8 @@ def ingest_flight_data(airport_code):
         if PRODUCTION_MODE:
             import requests
 
-            api_key_path = '../.aviationedge/api.txt'
-            output_file_path = f'{INGESTION_DATA_PATH}flight_data_{airport_code}.json'  # Temporary location to store fetched data
+            api_key_path = AVIATION_EDGE_API_KEY_PATH
+            output_file_path = f'{INGESTION_DATA_PATH}{INGESTED_FLIGHTS_PREFIX}{airport_code}.json'  # Temporary location to store fetched data
             # Read the API key
             with open(api_key_path, 'r') as f:
                 api_key = f.read().strip()
@@ -80,7 +92,7 @@ def ingest_flight_data(airport_code):
 
         else: # Developer mode
             local_file_path = f'.aviationedge/response_departure_{airport_code}.json'
-            output_file_path = f'{INGESTION_DATA_PATH}flight_data_{airport_code}.json'  # Temporary location to store fetched data
+            output_file_path = f'{INGESTION_DATA_PATH}{INGESTED_FLIGHTS_PREFIX}{airport_code}.json'  # Temporary location to store fetched data
 
             with open(local_file_path, 'r') as f:
                 flight_data = json.load(f)
@@ -130,6 +142,40 @@ def ingest_weather_data(**kwargs):
         print(f"Error while ingesting flight data: {e}")
         raise
 
+# ======== Staging ========
+# === Clean ====
+def clean_flight_data(departure_code, filter_arrival_code):
+    """
+    Cleans the flight data by filtering flights where the arrival airport matches the given code.
+    :param input_file_path: Path to the input JSON file with raw flight data.
+    :param output_file_path: Path to save the cleaned flight data.
+    :param filter_arrival_code: IATA code of the arrival airport to filter by.
+    """
+    try:
+        import json
+
+        input_file_path = f'{INGESTION_DATA_PATH}{INGESTED_FLIGHTS_PREFIX}{departure_code}.json'
+        output_file_path = f'{STAGING_DATA_PATH}{INGESTED_FLIGHTS_PREFIX}{filter_arrival_code}.json'
+        
+        with open(input_file_path, 'r') as input_file:
+            flight_data = json.load(input_file)
+        
+        # Filter flights where the arrival airport matches the specified code
+        cleaned_data = [
+            flight for flight in flight_data
+            if flight.get('arrival', {}).get('iataCode', '').upper() == filter_arrival_code.upper()
+        ]
+        
+        # Save the cleaned flight data
+        with open(output_file_path, 'w') as output_file:
+            json.dump(cleaned_data, output_file, indent=4)
+        
+        print(f"Cleaned data saved to {output_file_path}. Total records: {len(cleaned_data)}")
+    except Exception as e:
+        print(f"Error while cleaning flight data: {e}")
+        raise
+
+
 # =========================================================
 
 
@@ -140,20 +186,16 @@ with TaskGroup("ingestion_pipeline",dag=global_dag) as ingestion_pipeline:
         dag=global_dag,
     )
 
-    with TaskGroup("ingestion_flights_data",dag=global_dag) as ingest_flight_task:
+    ingest_flights_mco = PythonOperator(
+        task_id='ingest_flights_mco_data',
+        dag=global_dag,
+        python_callable=lambda: ingest_flight_data('MCO'),
+    )
 
-        ingest_flights_mco = PythonOperator(
-            task_id='ingest_flights_mco_data',
-            dag=global_dag,
-            python_callable=lambda: ingest_flight_data('MCO'),
-        )
-
-        ingest_flights_fll = PythonOperator(
-            task_id='ingest_flights_fll_data',
-            python_callable=lambda: ingest_flight_data('FLL'),
-        )
-
-        ingest_flights_mco >> ingest_flights_fll
+    ingest_flights_fll = PythonOperator(
+        task_id='ingest_flights_fll_data',
+        python_callable=lambda: ingest_flight_data('FLL'),
+    )
 
     ingest_weather_task = PythonOperator(
         task_id='ingest_weather_data',
@@ -166,7 +208,7 @@ with TaskGroup("ingestion_pipeline",dag=global_dag) as ingestion_pipeline:
         trigger_rule='all_success'
     )
 
-    start >> [ingest_flight_task, ingest_weather_task] >> end
+    start >> [ingest_flights_mco, ingest_flights_fll, ingest_weather_task] >> end
 
 
 with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
@@ -175,13 +217,24 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
         dag=global_dag,
     )
 
+    clean_flights_mco = PythonOperator(
+        task_id='clean_flights_mco_data',
+        dag=global_dag,
+        python_callable=lambda: clean_flight_data('MCO', 'FLL'),
+    )
+
+    clean_flights_fll = PythonOperator(
+        task_id='clean_flights_fll_data',
+        python_callable=lambda: clean_flight_data('FLL', 'MCO'),
+    )
+
     end = DummyOperator(
-        task_id='staging_end',
+        task_id='end',
         dag=global_dag,
         trigger_rule='all_success'
     )
 
-    start >> end
+    start >> [clean_flights_mco, clean_flights_fll] >> end
 
 start = DummyOperator(
     task_id='start',
