@@ -217,6 +217,7 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
         dag=global_dag,
     )
 
+    # === CLEAN ===
     clean_flights_mco = PythonOperator(
         task_id='clean_flights_mco_data',
         dag=global_dag,
@@ -228,11 +229,21 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
         python_callable=lambda: clean_flight_data('FLL', 'MCO'),
     )
 
+    # === Postgres ===
     create_flights_table = PostgresOperator(
         task_id='create_flights_table',
         dag=global_dag,
         postgres_conn_id='postgres_default',
         sql='sql/create_flights_table.sql',
+        trigger_rule='none_failed',
+        autocommit=True,
+    )
+
+    create_weather_table = PostgresOperator(
+        task_id='create_weather_table',
+        dag=global_dag,
+        postgres_conn_id='postgres_default',
+        sql='sql/create_weather_table.sql',     # ADAPT THIS FILE, SO THAT ATTRIBUTES ARE ATOMIC
         trigger_rule='none_failed',
         autocommit=True,
     )
@@ -243,7 +254,7 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
         trigger_rule='all_success'
     )
 
-    start >> [clean_flights_mco, clean_flights_fll]
+    start >> [clean_flights_mco, clean_flights_fll, create_weather_table]
     [clean_flights_mco, clean_flights_fll] >> create_flights_table  
     create_flights_table >> end
 

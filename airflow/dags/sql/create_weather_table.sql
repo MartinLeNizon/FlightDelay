@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS weather (
+    id VARCHAR PRIMARY KEY,
+    metar VARCHAR(250)
+);
