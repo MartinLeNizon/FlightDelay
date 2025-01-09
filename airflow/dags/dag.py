@@ -228,13 +228,24 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
         python_callable=lambda: clean_flight_data('FLL', 'MCO'),
     )
 
+    create_flights_table = PostgresOperator(
+        task_id='create_flights_table',
+        dag=global_dag,
+        postgres_conn_id='postgres_default',
+        sql='sql/create_flights_table.sql',
+        trigger_rule='none_failed',
+        autocommit=True,
+    )
+
     end = DummyOperator(
         task_id='end',
         dag=global_dag,
         trigger_rule='all_success'
     )
 
-    start >> [clean_flights_mco, clean_flights_fll] >> end
+    start >> [clean_flights_mco, clean_flights_fll]
+    [clean_flights_mco, clean_flights_fll] >> create_flights_table  
+    create_flights_table >> end
 
 start = DummyOperator(
     task_id='start',
