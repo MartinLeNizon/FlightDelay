@@ -20,7 +20,7 @@ POSTGRES_CONNECTION_ID = 'postgres_default'
 # =================== Path ===================
 
 INGESTION_DATA_PATH = 'data/ingestion/'
-STAGING_DATA_PATH = 'data/staging'
+STAGING_DATA_PATH = 'data/staging/'
 
 
 AVIATION_EDGE_API_KEY_PATH = '../.aviationedge/api.txt'
