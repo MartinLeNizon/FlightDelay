@@ -58,6 +58,29 @@ global_dag = DAG(
 
 # =================== Python Functions ===================
 
+from datetime import datetime
+
+def convert_timestamp_to_iso(timestamp):
+    """
+    Convert timestamp in 'DDHHMMZ' format to ISO 8601 format 'YYYY-MM-DDTHH:MM:SS.mmm'.
+    Assumes the timestamp refers to the current year and month.
+    """
+    current_year_month = datetime.now().strftime("%Y-%m-")  # Get current year and month (e.g., 2024-12-)
+    
+    # Extract day, hour, and minute from the timestamp
+    day = timestamp[:2]
+    hour = timestamp[2:4]
+    minute = timestamp[4:6]
+    
+    # Create the full datetime string and convert it to the desired format
+    formatted_time = current_year_month + day + f" {hour}:{minute}:00"  # 'YYYY-MM-DD HH:MM:00'
+    
+    # Convert to ISO 8601 format (with milliseconds)
+    formatted_time = datetime.strptime(formatted_time, "%Y-%m-%d %H:%M:%S")
+    return formatted_time.isoformat()  # Returns in the format 'YYYY-MM-DDTHH:MM:SS.mmm'
+
+
+
 # ======== Ingestion ========
 
 def ingest_flight_data(airport_code):
@@ -220,15 +243,6 @@ def load_weather_data():
             """
             cursor.execute(insert_query, (airport_icao, timestamp, wind, visibility, sky_condition, temperature, altimeter))
 
-            
-            # insert_query = """
-            #     INSERT INTO weather (
-            #         airport_icao, timestamp, wind, visibility, sky_condition, temperature, altimeter
-            #     )
-            #     VALUES (%s, %s, %s, %s, %s, %s, %s)
-            # """
-            # cursor.execute(insert_query, (airport_icao, timestamp, wind, visibility, sky_condition, temperature, altimeter))
-
 
 
         # Commit changes
@@ -240,7 +254,6 @@ def load_weather_data():
         print(f"Error loading weather data: {e}")
         raise
 
-# =========================================================
 def load_flights_from_file(file_path: str) -> None:
     """
     Parse flight data from a specified JSON file and insert it into the PostgreSQL 'flights' table.
@@ -292,6 +305,94 @@ def load_flights_from_file(file_path: str) -> None:
     except Exception as e:
         print(f"Error loading flight data from {file_path}: {e}")
         raise
+
+def clean_weather_data():
+    pass
+
+def update_formatted_timestamps():
+    from airflow.providers.postgres.hooks.postgres import PostgresHook
+
+    pg_hook = PostgresHook(postgres_conn_id=POSTGRES_CONNECTION_ID)
+    conn = pg_hook.get_conn()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT id, timestamp FROM weather WHERE formatted_timestamp IS NULL")
+    records = cursor.fetchall()
+
+    for record in records:
+        weather_id, timestamp = record
+        formatted_time = convert_timestamp_to_iso(timestamp)
+        
+        cursor.execute("""
+            UPDATE weather
+            SET formatted_timestamp = %s
+            WHERE id = %s
+        """, (formatted_time, weather_id))
+        
+    conn.commit()
+    cursor.close()
+    print("Formatted timestamps updated successfully.")
+
+
+
+def associate_weather_with_flights():
+    """
+    Associate flights with the most recent weather data at the departure and arrival airports.
+    """
+    try:
+        from airflow.providers.postgres.hooks.postgres import PostgresHook
+
+        # Establish connection to PostgreSQL
+        pg_hook = PostgresHook(postgres_conn_id=POSTGRES_CONNECTION_ID)
+        conn = pg_hook.get_conn()
+        cursor = conn.cursor()
+
+        # Query to fetch all flights
+        cursor.execute("SELECT id, departure_icao, arrival_icao, scheduled_time FROM flights")
+        flights = cursor.fetchall()
+
+        for flight in flights:
+            flight_id, departure_icao, arrival_icao, scheduled_time = flight
+
+            # Find the most recent weather data for the departure airport
+            departure_weather_query = """
+                SELECT id FROM weather
+                WHERE airport_icao = %s AND timestamp <= %s
+                ORDER BY timestamp DESC
+                LIMIT 1
+            """
+            cursor.execute(departure_weather_query, (departure_icao, scheduled_time))
+            departure_weather = cursor.fetchone()
+            departure_weather_id = departure_weather[0] if departure_weather else None
+
+            # Find the most recent weather data for the arrival airport
+            arrival_weather_query = """
+                SELECT id FROM weather
+                WHERE airport_icao = UPPER(%s) AND timestamp <= %s
+                ORDER BY timestamp DESC
+                LIMIT 1
+            """
+            cursor.execute(arrival_weather_query, (arrival_icao, scheduled_time))
+            arrival_weather = cursor.fetchone()
+            arrival_weather_id = arrival_weather[0] if arrival_weather else None
+
+            # Update the flight record with weather data IDs
+            update_query = """
+                UPDATE flights
+                SET departure_weather_id = %s, destination_weather_id = %s
+                WHERE id = %s
+            """
+            cursor.execute(update_query, (departure_weather_id, arrival_weather_id, flight_id))
+
+        # Commit changes
+        conn.commit()
+        cursor.close()
+        print("Flights successfully associated with weather data.")
+
+    except Exception as e:
+        print(f"Error associating weather with flights: {e}")
+        raise
+
 
 
 # =================== Operators Definition ===================
@@ -358,7 +459,7 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
         task_id='create_weather_table',
         dag=global_dag,
         postgres_conn_id=POSTGRES_CONNECTION_ID,
-        sql='sql/create_weather_table.sql',     # ADAPT THIS FILE, SO THAT ATTRIBUTES ARE ATOMIC
+        sql='sql/create_weather_table.sql',
         trigger_rule='none_failed',
         autocommit=True,
     )
@@ -367,25 +468,46 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
         task_id='load_weather_data',
         python_callable=load_weather_data,
     )
-
-    def load_flights_ae_call_2():
-        return load_flights_from_file('data/staging/flight_data_FLL.json')
-
-    def load_flights_ae_call_3():
-        return load_flights_from_file('data/staging/flight_data_MCO.json')
     
     load_flights_fll = PythonOperator(
         task_id='load_flights_fll',
         python_callable=lambda: load_flights_from_file('data/staging/flight_data_FLL.json'),
         dag=global_dag,
-)
+    )
 
     load_flights_mco = PythonOperator(
         task_id='load_flights_mco',
         python_callable=lambda: load_flights_from_file('data/staging/flight_data_MCO.json'),
         dag=global_dag,
-)
+    )
 
+    clean_weather_data = PythonOperator(
+        task_id='clean_weather_data',
+        python_callable=clean_weather_data,
+        dag=global_dag,
+    )
+
+    update_formatted_timestamps = PythonOperator(
+        task_id='update_formatted_timestamps',
+        python_callable=update_formatted_timestamps,
+        dag=global_dag,
+    )
+
+    # convert_flights_time_format = PostgresOperator(
+    #     task_id='convert_flights_time_format',
+    #     dag=global_dag,
+    #     postgres_conn_id=POSTGRES_CONNECTION_ID,
+    #     sql='sql/convert_flights_time_format.sql',
+    #     trigger_rule='none_failed',
+    #     autocommit=True,
+    # )
+
+    # join_weather_data = PythonOperator(
+    #     task_id='join_weather_data',
+    #     python_callable=associate_weather_with_flights,
+    #     dag=global_dag,
+    # )
+    
 
     end = DummyOperator(
         task_id='end',
@@ -394,10 +516,11 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
     )
 
     start >> [clean_flights_mco, clean_flights_fll, create_weather_table]
-    [clean_flights_mco, clean_flights_fll]
+    [clean_flights_mco, clean_flights_fll] >> create_flights_table
     create_flights_table >> [load_flights_fll, load_flights_mco]
     create_weather_table >> load_weather_data_postgres
-    create_flights_table >> end
+    [load_flights_fll, load_flights_mco, load_weather_data_postgres] >> update_formatted_timestamps >> end
+    # join_weather_data >> end
 
 start = DummyOperator(
     task_id='start',
