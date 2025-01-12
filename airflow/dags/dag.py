@@ -241,6 +241,57 @@ def load_weather_data():
         raise
 
 # =========================================================
+def load_flights_from_file(file_path: str) -> None:
+    """
+    Parse flight data from a specified JSON file and insert it into the PostgreSQL 'flights' table.
+    :param file_path: Path to the JSON file containing flight data.
+    """
+    try:
+        import json
+        from airflow.providers.postgres.hooks.postgres import PostgresHook
+
+        # Load the JSON file
+        with open(file_path, 'r') as f:
+            flights_data = json.load(f)
+        print(f"Loaded {len(flights_data)} flight records from {file_path}.")
+
+        # Connect to PostgreSQL
+        pg_hook = PostgresHook(postgres_conn_id=POSTGRES_CONNECTION_ID)
+        conn = pg_hook.get_conn()
+        cursor = conn.cursor()
+
+        # Prepare the SQL insert query
+        insert_query = """
+            INSERT INTO flights (
+                scheduled_time, departure_icao, arrival_icao, delay_in_minutes, flight_status, airline, flight_number
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """
+
+        # Iterate through the flight records and insert them
+        for record in flights_data:
+            departure = record.get('departure', {})
+            arrival = record.get('arrival', {})
+            airline = record.get('airline', {})
+            flight = record.get('flight', {})
+
+            cursor.execute(insert_query, (
+                departure.get('scheduledTime'),
+                departure.get('icaoCode'),
+                arrival.get('icaoCode'),
+                departure.get('delay', 0),
+                record.get('status', 'unknown'),
+                airline.get('name', 'unknown'),
+                flight.get('number', 'unknown')
+            ))
+
+        # Commit the changes and close the connection
+        conn.commit()
+        cursor.close()
+        print(f"Flight data from {file_path} loaded successfully into PostgreSQL.")
+
+    except Exception as e:
+        print(f"Error loading flight data from {file_path}: {e}")
+        raise
 
 
 # =================== Operators Definition ===================
@@ -317,6 +368,25 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
         python_callable=load_weather_data,
     )
 
+    def load_flights_ae_call_2():
+        return load_flights_from_file('data/staging/flight_data_FLL.json')
+
+    def load_flights_ae_call_3():
+        return load_flights_from_file('data/staging/flight_data_MCO.json')
+    
+    load_flights_fll = PythonOperator(
+        task_id='load_flights_fll',
+        python_callable=lambda: load_flights_from_file('data/staging/flight_data_FLL.json'),
+        dag=global_dag,
+)
+
+    load_flights_mco = PythonOperator(
+        task_id='load_flights_mco',
+        python_callable=lambda: load_flights_from_file('data/staging/flight_data_MCO.json'),
+        dag=global_dag,
+)
+
+
     end = DummyOperator(
         task_id='end',
         dag=global_dag,
@@ -324,7 +394,8 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
     )
 
     start >> [clean_flights_mco, clean_flights_fll, create_weather_table]
-    [clean_flights_mco, clean_flights_fll] >> create_flights_table  
+    [clean_flights_mco, clean_flights_fll]
+    create_flights_table >> [load_flights_fll, load_flights_mco]
     create_weather_table >> load_weather_data_postgres
     create_flights_table >> end
 
