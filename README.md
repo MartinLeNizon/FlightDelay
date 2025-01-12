@@ -8,14 +8,12 @@ Students: **Jean-Christophe Schmitt & Martin Nizon-Deladoeuille**
 
 ### Usage
 
-1. Ensure you have Docker installed and running. install all required python packages with `pip install -r requirements.txt`
-2. Get your computer's user id by typing in `id -u` in your bash terminal. As a window user you will have to run this command in your WSL terminal as it will not work on CMD or powershell.
-3. Make sure to update the `AIRFLOW_UID` in the .env file to the ID you obtained.
-4. Build and run the environment using the `docker-compose up` command (run it in the directory of the project). This step will take a while as a lot of images will be downloaded on your computer.
-5. If they do not exist yet. Create a folder in your `/dags` folder called **ingestion**. Inside this folder create two sub folders: **staging** and **ingestion**.
-6. You can now connect to [localhost:8080](http://localhost:8080/) to access the airflow dashboard, user and password are `airflow`.
-7. Now you must add a connection to the postgres SQL database. Navigate To the Admin -> Connections menu, then click the blue + button to add a new connection.
-8. Fill in the form like in the image ![](docs/assets/postgres_connection.png)
+1. Get your computer's user id by typing in `id -u` in your bash terminal. As a window user you will have to run this command in your WSL terminal as it will not work on CMD or powershell.
+2. Make sure to update the `AIRFLOW_UID` in the .env file to the ID you obtained.
+3. Build and run the environment by executing `start.bat`.
+5. You can now connect to [localhost:8080](http://localhost:8080/) to access the airflow dashboard, user and password are `airflow`.
+6. Now you must add a connection to the postgres SQL database. Navigate To the Admin -> Connections menu, then click the blue + button to add a new connection.
+7. Fill in the form like in the image ![](airflow/assets/postgres_connection.png)
 ## Environment info
 | Service  | Address:Port           | Image        |
 | :------- | ---------------------- | ------------ |
