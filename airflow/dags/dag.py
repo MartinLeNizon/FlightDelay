@@ -118,7 +118,7 @@ def ingest_weather_data(**kwargs):
         import json
         import requests
 
-        output_file_path = f'{INGESTION_DATA_PATH}{WEATHER_DATA_JSON}'
+        output_file_path = f'{STAGING_DATA_PATH}{WEATHER_DATA_JSON}'
 
         if PRODUCTION_MODE:
             # TO CHANGE!!!
@@ -174,8 +174,6 @@ def clean_flight_data(departure_code, filter_arrival_code):
         print(f"Error while cleaning flight data: {e}")
         raise
 
-# === Parse & Load ===
-
 def load_weather_data():
     """
     Parse weather data from JSON and insert it into the PostgreSQL 'weather' table.
@@ -193,43 +191,55 @@ def load_weather_data():
         conn = pg_hook.get_conn()
         cursor = conn.cursor()
 
+        # Function to extract visibility from METAR parts
+        def extract_visibility(parts):
+            """ Extracts visibility from the METAR parts """
+            for part in parts:
+                # Check if part is a valid visibility value (e.g., "10SM")
+                if part.endswith('SM') and part[:-2].isdigit():
+                    return part
+            return None
+
         # Iterate through the JSON data
         for record in weather_data:
             raw_ob = record.get("rawOb", "")
-            
+
             # Parse rawOb
             parts = raw_ob.split()
+            print(f"Parsed parts: {parts}")  # Debugging step
+
+            if "COR" in parts:
+                parts.remove("COR")  # Remove COR from the parts list
+
             if len(parts) < 6:
                 print(f"Skipping invalid record: {raw_ob}")
                 continue
 
             airport_icao = parts[0]
             timestamp = parts[1]
-            wind = parts[2]
-            visibility = parts[3]
-            sky_condition = parts[4]
-            temperature = parts[5]
+
+            # Check if the wind field is valid
+            wind = next((part for part in parts if part.endswith("KT") and len(part) >= 7), None)
+
+            # Extract visibility using the function
+            visibility = extract_visibility(parts)
+
+            print(f"Wind: {wind}, Visibility: {visibility}")  # Debugging step
+
+            sky_condition = parts[4] if len(parts) > 4 else None
+            temperature = parts[5] if len(parts) > 5 else None
             altimeter = float(parts[6][1:]) if len(parts) > 6 and parts[6].startswith('A') else None
 
-            
+            # Prepare the insert query
             insert_query = """
                 INSERT INTO weather (
-                    airport_icao, timestamp, wind
+                    airport_icao, timestamp, wind, visibility
                 )
-                VALUES (%s, %s, %s)
+                VALUES (%s, %s, %s, %s)
             """
-            cursor.execute(insert_query, (airport_icao, timestamp, wind))
 
-            
-            # insert_query = """
-            #     INSERT INTO weather (
-            #         airport_icao, timestamp, wind, visibility, sky_condition, temperature, altimeter
-            #     )
-            #     VALUES (%s, %s, %s, %s, %s, %s, %s)
-            # """
-            # cursor.execute(insert_query, (airport_icao, timestamp, wind, visibility, sky_condition, temperature, altimeter))
-
-
+            # Execute the insert query
+            cursor.execute(insert_query, (airport_icao, timestamp, wind, visibility))
 
         # Commit changes
         conn.commit()
@@ -239,6 +249,8 @@ def load_weather_data():
     except Exception as e:
         print(f"Error loading weather data: {e}")
         raise
+
+
 
 # =========================================================
 def load_flights_from_file(file_path: str) -> None:
@@ -295,7 +307,7 @@ def load_flights_from_file(file_path: str) -> None:
 
 
 # =================== Operators Definition ===================
-with TaskGroup("ingestion_pipeline",dag=global_dag) as ingestion_pipeline:
+with TaskGroup("ingestion_pipeline", dag=global_dag) as ingestion_pipeline:
     start = DummyOperator(
         task_id='start',
         dag=global_dag,
@@ -312,18 +324,14 @@ with TaskGroup("ingestion_pipeline",dag=global_dag) as ingestion_pipeline:
         python_callable=lambda: ingest_flight_data('FLL'),
     )
 
-    ingest_weather_task = PythonOperator(
-        task_id='ingest_weather_data',
-        python_callable=ingest_weather_data,
-    )
-
     end = DummyOperator(
         task_id='end',
         dag=global_dag,
         trigger_rule='all_success'
     )
 
-    start >> [ingest_flights_mco, ingest_flights_fll, ingest_weather_task] >> end
+    start >> [ingest_flights_mco, ingest_flights_fll] >> end
+
 
 
 with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
@@ -363,10 +371,17 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
         autocommit=True,
     )
 
+    ingest_weather_task = PythonOperator(
+        task_id='ingest_weather_data',
+        python_callable=ingest_weather_data,
+    )
+
     load_weather_data_postgres = PythonOperator(
         task_id='load_weather_data',
         python_callable=load_weather_data,
-    )
+        trigger_rule='all_done',  # Ensure it runs even if upstream task fails or skips
+)
+
 
     def load_flights_ae_call_2():
         return load_flights_from_file('data/staging/flight_data_FLL.json')
@@ -393,11 +408,12 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
         trigger_rule='all_success'
     )
 
-    start >> [clean_flights_mco, clean_flights_fll, create_weather_table]
-    [clean_flights_mco, clean_flights_fll]
+    start >> [clean_flights_mco, clean_flights_fll, create_weather_table, ingest_weather_task]
+    ingest_weather_task >> load_weather_data_postgres
     create_flights_table >> [load_flights_fll, load_flights_mco]
-    create_weather_table >> load_weather_data_postgres
-    create_flights_table >> end
+    end
+
+
 
 start = DummyOperator(
     task_id='start',
