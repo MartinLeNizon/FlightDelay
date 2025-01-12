@@ -1,5 +1,4 @@
 # Ignore specific large CSV files
-data
 !for_us/data
 for_us/data/Airline\ Delay\ Data\ (+Weather)/DelayData.csv
 for_us/data/Flight\ Delay\ and\ Cancellation\ Dataset/flights_sample_3m.csv

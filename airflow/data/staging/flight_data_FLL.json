@@ -1,0 +1,937 @@
+[
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "7",
+            "delay": 18,
+            "scheduledTime": "2024-12-28t20:33:00.000",
+            "estimatedTime": "2024-12-28t20:50:00.000",
+            "actualTime": "2024-12-28t20:50:00.000",
+            "estimatedRunway": "2024-12-28t20:50:00.000",
+            "actualRunway": "2024-12-28t20:50:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "4",
+            "gate": "g14",
+            "scheduledTime": "2024-12-28t21:48:00.000",
+            "estimatedTime": "2024-12-28t21:32:00.000"
+        },
+        "airline": {
+            "name": "spirit airlines",
+            "iataCode": "nk",
+            "icaoCode": "nks"
+        },
+        "flight": {
+            "number": "675",
+            "iataNumber": "nk675",
+            "icaoNumber": "nks675"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "6",
+            "delay": 9,
+            "scheduledTime": "2024-12-29t06:25:00.000",
+            "estimatedTime": "2024-12-29t06:40:00.000",
+            "actualTime": "2024-12-29t06:34:00.000",
+            "estimatedRunway": "2024-12-29t06:34:00.000",
+            "actualRunway": "2024-12-29t06:34:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "4",
+            "gate": "g6",
+            "scheduledTime": "2024-12-29t07:38:00.000",
+            "estimatedTime": "2024-12-29t07:12:00.000",
+            "actualTime": "2024-12-29t07:13:00.000",
+            "estimatedRunway": "2024-12-29t07:13:00.000",
+            "actualRunway": "2024-12-29t07:13:00.000"
+        },
+        "airline": {
+            "name": "spirit airlines",
+            "iataCode": "nk",
+            "icaoCode": "nks"
+        },
+        "flight": {
+            "number": "195",
+            "iataNumber": "nk195",
+            "icaoNumber": "nks195"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "110",
+            "delay": 440,
+            "scheduledTime": "2024-12-29t10:50:00.000",
+            "estimatedTime": "2024-12-29t18:10:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "1",
+            "gate": "b8",
+            "scheduledTime": "2024-12-29t12:00:00.000"
+        },
+        "airline": {
+            "name": "southwest airlines",
+            "iataCode": "wn",
+            "icaoCode": "swa"
+        },
+        "flight": {
+            "number": "2905",
+            "iataNumber": "wn2905",
+            "icaoNumber": "swa2905"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "9",
+            "delay": 65,
+            "scheduledTime": "2024-12-29t20:33:00.000",
+            "estimatedTime": "2024-12-29t21:38:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "4",
+            "gate": "g14",
+            "scheduledTime": "2024-12-29t21:48:00.000"
+        },
+        "airline": {
+            "name": "spirit airlines",
+            "iataCode": "nk",
+            "icaoCode": "nks"
+        },
+        "flight": {
+            "number": "675",
+            "iataNumber": "nk675",
+            "icaoNumber": "nks675"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "4",
+            "delay": 96,
+            "scheduledTime": "2024-12-30t06:25:00.000",
+            "estimatedTime": "2024-12-30t08:01:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "4",
+            "gate": "g5",
+            "scheduledTime": "2024-12-30t07:38:00.000"
+        },
+        "airline": {
+            "name": "spirit airlines",
+            "iataCode": "nk",
+            "icaoCode": "nks"
+        },
+        "flight": {
+            "number": "195",
+            "iataNumber": "nk195",
+            "icaoNumber": "nks195"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "108",
+            "delay": 11,
+            "scheduledTime": "2024-12-30t10:50:00.000",
+            "estimatedTime": "2024-12-30t10:50:00.000",
+            "actualTime": "2024-12-30t11:00:00.000",
+            "estimatedRunway": "2024-12-30t11:00:00.000",
+            "actualRunway": "2024-12-30t11:00:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "1",
+            "gate": "b2",
+            "scheduledTime": "2024-12-30t12:00:00.000",
+            "estimatedTime": "2024-12-30t11:40:00.000"
+        },
+        "airline": {
+            "name": "southwest airlines",
+            "iataCode": "wn",
+            "icaoCode": "swa"
+        },
+        "flight": {
+            "number": "2905",
+            "iataNumber": "wn2905",
+            "icaoNumber": "swa2905"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "8",
+            "delay": 17,
+            "scheduledTime": "2024-12-30t20:33:00.000",
+            "estimatedTime": "2024-12-30t20:51:00.000",
+            "actualTime": "2024-12-30t20:50:00.000",
+            "estimatedRunway": "2024-12-30t20:50:00.000",
+            "actualRunway": "2024-12-30t20:50:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "4",
+            "gate": "g3",
+            "scheduledTime": "2024-12-30t21:48:00.000",
+            "estimatedTime": "2024-12-30t21:23:00.000",
+            "actualTime": "2024-12-30t21:25:00.000",
+            "estimatedRunway": "2024-12-30t21:25:00.000",
+            "actualRunway": "2024-12-30t21:25:00.000"
+        },
+        "airline": {
+            "name": "spirit airlines",
+            "iataCode": "nk",
+            "icaoCode": "nks"
+        },
+        "flight": {
+            "number": "675",
+            "iataNumber": "nk675",
+            "icaoNumber": "nks675"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "4",
+            "delay": 10,
+            "scheduledTime": "2024-12-31t06:25:00.000",
+            "estimatedTime": "2024-12-31t06:37:00.000",
+            "actualTime": "2024-12-31t06:35:00.000",
+            "estimatedRunway": "2024-12-31t06:35:00.000",
+            "actualRunway": "2024-12-31t06:35:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "4",
+            "gate": "g6",
+            "scheduledTime": "2024-12-31t07:38:00.000",
+            "estimatedTime": "2024-12-31t07:08:00.000",
+            "actualTime": "2024-12-31t07:11:00.000",
+            "estimatedRunway": "2024-12-31t07:11:00.000",
+            "actualRunway": "2024-12-31t07:11:00.000"
+        },
+        "airline": {
+            "name": "spirit airlines",
+            "iataCode": "nk",
+            "icaoCode": "nks"
+        },
+        "flight": {
+            "number": "195",
+            "iataNumber": "nk195",
+            "icaoNumber": "nks195"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "129",
+            "delay": 9,
+            "scheduledTime": "2024-12-31t16:15:00.000",
+            "estimatedTime": "2024-12-31t16:28:00.000",
+            "actualTime": "2024-12-31t16:23:00.000",
+            "estimatedRunway": "2024-12-31t16:23:00.000",
+            "actualRunway": "2024-12-31t16:23:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "1",
+            "gate": "b4",
+            "scheduledTime": "2024-12-31t17:20:00.000",
+            "estimatedTime": "2024-12-31t16:57:00.000",
+            "actualTime": "2024-12-31t16:59:00.000",
+            "estimatedRunway": "2024-12-31t16:59:00.000",
+            "actualRunway": "2024-12-31t16:59:00.000"
+        },
+        "airline": {
+            "name": "southwest airlines",
+            "iataCode": "wn",
+            "icaoCode": "swa"
+        },
+        "flight": {
+            "number": "4665",
+            "iataNumber": "wn4665",
+            "icaoNumber": "swa4665"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "13",
+            "delay": 6,
+            "scheduledTime": "2024-12-31t14:20:00.000",
+            "actualTime": "2024-12-31t14:25:00.000",
+            "estimatedRunway": "2024-12-31t14:25:00.000",
+            "actualRunway": "2024-12-31t14:25:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "scheduledTime": "2024-12-31t15:12:00.000",
+            "estimatedTime": "2024-12-31t15:11:00.000"
+        },
+        "airline": {
+            "name": "silver airways",
+            "iataCode": "3m",
+            "icaoCode": "sil"
+        },
+        "flight": {
+            "number": "9003",
+            "iataNumber": "3m9003",
+            "icaoNumber": "sil9003"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "28",
+            "delay": 6,
+            "scheduledTime": "2024-12-31t20:33:00.000",
+            "estimatedTime": "2024-12-31t20:33:00.000",
+            "actualTime": "2024-12-31t20:39:00.000",
+            "estimatedRunway": "2024-12-31t20:39:00.000",
+            "actualRunway": "2024-12-31t20:39:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "4",
+            "gate": "f4",
+            "scheduledTime": "2024-12-31t21:48:00.000",
+            "estimatedTime": "2024-12-31t21:12:00.000",
+            "actualTime": "2024-12-31t21:14:00.000",
+            "estimatedRunway": "2024-12-31t21:14:00.000",
+            "actualRunway": "2024-12-31t21:14:00.000"
+        },
+        "airline": {
+            "name": "spirit airlines",
+            "iataCode": "nk",
+            "icaoCode": "nks"
+        },
+        "flight": {
+            "number": "675",
+            "iataNumber": "nk675",
+            "icaoNumber": "nks675"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "8",
+            "delay": 12,
+            "scheduledTime": "2025-01-01t06:25:00.000",
+            "estimatedTime": "2025-01-01t06:41:00.000",
+            "actualTime": "2025-01-01t06:37:00.000",
+            "estimatedRunway": "2025-01-01t06:37:00.000",
+            "actualRunway": "2025-01-01t06:37:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "4",
+            "gate": "g12",
+            "scheduledTime": "2025-01-01t07:38:00.000",
+            "estimatedTime": "2025-01-01t07:10:00.000"
+        },
+        "airline": {
+            "name": "spirit airlines",
+            "iataCode": "nk",
+            "icaoCode": "nks"
+        },
+        "flight": {
+            "number": "195",
+            "iataNumber": "nk195",
+            "icaoNumber": "nks195"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "129",
+            "delay": 15,
+            "scheduledTime": "2025-01-01t16:15:00.000",
+            "estimatedTime": "2025-01-01t16:32:00.000",
+            "actualTime": "2025-01-01t16:29:00.000",
+            "estimatedRunway": "2025-01-01t16:29:00.000",
+            "actualRunway": "2025-01-01t16:29:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "1",
+            "gate": "b9",
+            "scheduledTime": "2025-01-01t17:20:00.000",
+            "estimatedTime": "2025-01-01t17:09:00.000",
+            "actualTime": "2025-01-01t17:05:00.000",
+            "estimatedRunway": "2025-01-01t17:05:00.000",
+            "actualRunway": "2025-01-01t17:05:00.000"
+        },
+        "airline": {
+            "name": "southwest airlines",
+            "iataCode": "wn",
+            "icaoCode": "swa"
+        },
+        "flight": {
+            "number": "4665",
+            "iataNumber": "wn4665",
+            "icaoNumber": "swa4665"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "7",
+            "delay": 11,
+            "scheduledTime": "2025-01-01t20:33:00.000",
+            "estimatedTime": "2025-01-01t20:46:00.000",
+            "actualTime": "2025-01-01t20:43:00.000",
+            "estimatedRunway": "2025-01-01t20:43:00.000",
+            "actualRunway": "2025-01-01t20:43:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "4",
+            "gate": "g13",
+            "scheduledTime": "2025-01-01t21:48:00.000",
+            "estimatedTime": "2025-01-01t21:19:00.000"
+        },
+        "airline": {
+            "name": "spirit airlines",
+            "iataCode": "nk",
+            "icaoCode": "nks"
+        },
+        "flight": {
+            "number": "675",
+            "iataNumber": "nk675",
+            "icaoNumber": "nks675"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "scheduledTime": "2025-01-02t06:00:00.000",
+            "estimatedTime": "2025-01-02t05:49:00.000",
+            "actualTime": "2025-01-02t05:45:00.000",
+            "estimatedRunway": "2025-01-02t05:45:00.000",
+            "actualRunway": "2025-01-02t05:45:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "scheduledTime": "2025-01-02t06:34:00.000",
+            "estimatedTime": "2025-01-02t06:20:00.000",
+            "actualTime": "2025-01-02t06:20:00.000",
+            "estimatedRunway": "2025-01-02t06:20:00.000",
+            "actualRunway": "2025-01-02t06:20:00.000"
+        },
+        "airline": {
+            "name": "fedex",
+            "iataCode": "fx",
+            "icaoCode": "fdx"
+        },
+        "flight": {
+            "number": "1409",
+            "iataNumber": "fx1409",
+            "icaoNumber": "fdx1409"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "4",
+            "delay": 9,
+            "scheduledTime": "2025-01-02t06:25:00.000",
+            "estimatedTime": "2025-01-02t06:39:00.000",
+            "actualTime": "2025-01-02t06:33:00.000",
+            "estimatedRunway": "2025-01-02t06:33:00.000",
+            "actualRunway": "2025-01-02t06:33:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "4",
+            "gate": "f2",
+            "scheduledTime": "2025-01-02t07:38:00.000",
+            "estimatedTime": "2025-01-02t07:08:00.000",
+            "actualTime": "2025-01-02t07:09:00.000",
+            "estimatedRunway": "2025-01-02t07:09:00.000",
+            "actualRunway": "2025-01-02t07:09:00.000"
+        },
+        "airline": {
+            "name": "spirit airlines",
+            "iataCode": "nk",
+            "icaoCode": "nks"
+        },
+        "flight": {
+            "number": "195",
+            "iataNumber": "nk195",
+            "icaoNumber": "nks195"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "126",
+            "delay": 5,
+            "scheduledTime": "2025-01-02t10:50:00.000",
+            "estimatedTime": "2025-01-02t10:50:00.000",
+            "actualTime": "2025-01-02t10:55:00.000",
+            "estimatedRunway": "2025-01-02t10:55:00.000",
+            "actualRunway": "2025-01-02t10:55:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "1",
+            "gate": "b6",
+            "scheduledTime": "2025-01-02t12:00:00.000",
+            "estimatedTime": "2025-01-02t11:33:00.000",
+            "actualTime": "2025-01-02t11:34:00.000",
+            "estimatedRunway": "2025-01-02t11:34:00.000",
+            "actualRunway": "2025-01-02t11:34:00.000"
+        },
+        "airline": {
+            "name": "southwest airlines",
+            "iataCode": "wn",
+            "icaoCode": "swa"
+        },
+        "flight": {
+            "number": "2905",
+            "iataNumber": "wn2905",
+            "icaoNumber": "swa2905"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "delay": 49,
+            "scheduledTime": "2025-01-02t08:00:00.000",
+            "estimatedTime": "2025-01-02t08:10:00.000",
+            "actualTime": "2025-01-02t08:49:00.000",
+            "estimatedRunway": "2025-01-02t08:49:00.000",
+            "actualRunway": "2025-01-02t08:49:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "scheduledTime": "2025-01-02t09:41:00.000"
+        },
+        "airline": {
+            "name": "silver airways",
+            "iataCode": "3m",
+            "icaoCode": "sil"
+        },
+        "flight": {
+            "number": "9000",
+            "iataNumber": "3m9000",
+            "icaoNumber": "sil9000"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "delay": 17,
+            "scheduledTime": "2025-01-02t15:00:00.000",
+            "estimatedTime": "2025-01-02t15:00:00.000",
+            "actualTime": "2025-01-02t15:17:00.000",
+            "estimatedRunway": "2025-01-02t15:17:00.000",
+            "actualRunway": "2025-01-02t15:17:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "scheduledTime": "2025-01-02t15:59:00.000",
+            "estimatedTime": "2025-01-02t15:51:00.000"
+        },
+        "airline": {
+            "name": "aerolineas ejecutivas",
+            "iataCode": "",
+            "icaoCode": "let"
+        },
+        "flight": {
+            "number": "6310",
+            "iataNumber": "",
+            "icaoNumber": "let6310"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "7",
+            "delay": 16,
+            "scheduledTime": "2025-01-02t20:33:00.000",
+            "estimatedTime": "2025-01-02t20:46:00.000",
+            "actualTime": "2025-01-02t20:48:00.000",
+            "estimatedRunway": "2025-01-02t20:48:00.000",
+            "actualRunway": "2025-01-02t20:48:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "4",
+            "gate": "g5",
+            "scheduledTime": "2025-01-02t21:48:00.000",
+            "estimatedTime": "2025-01-02t21:30:00.000"
+        },
+        "airline": {
+            "name": "spirit airlines",
+            "iataCode": "nk",
+            "icaoCode": "nks"
+        },
+        "flight": {
+            "number": "675",
+            "iataNumber": "nk675",
+            "icaoNumber": "nks675"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "4",
+            "delay": 12,
+            "scheduledTime": "2025-01-03t06:25:00.000",
+            "estimatedTime": "2025-01-03t06:39:00.000",
+            "actualTime": "2025-01-03t06:36:00.000",
+            "estimatedRunway": "2025-01-03t06:36:00.000",
+            "actualRunway": "2025-01-03t06:36:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "4",
+            "gate": "g12",
+            "scheduledTime": "2025-01-03t07:38:00.000",
+            "estimatedTime": "2025-01-03t07:10:00.000",
+            "actualTime": "2025-01-03t07:12:00.000",
+            "estimatedRunway": "2025-01-03t07:12:00.000",
+            "actualRunway": "2025-01-03t07:12:00.000"
+        },
+        "airline": {
+            "name": "spirit airlines",
+            "iataCode": "nk",
+            "icaoCode": "nks"
+        },
+        "flight": {
+            "number": "195",
+            "iataNumber": "nk195",
+            "icaoNumber": "nks195"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "delay": 10,
+            "scheduledTime": "2025-01-02t21:00:00.000",
+            "estimatedTime": "2025-01-02t21:10:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "scheduledTime": "2025-01-02t21:54:00.000"
+        },
+        "airline": {
+            "name": "csi aviation",
+            "iataCode": "",
+            "icaoCode": "csi"
+        },
+        "flight": {
+            "number": "532",
+            "iataNumber": "",
+            "icaoNumber": "csi532"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "delay": 15,
+            "scheduledTime": "2025-01-03t12:00:00.000",
+            "estimatedTime": "2025-01-03t12:08:00.000",
+            "actualTime": "2025-01-03t12:14:00.000",
+            "estimatedRunway": "2025-01-03t12:14:00.000",
+            "actualRunway": "2025-01-03t12:14:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "scheduledTime": "2025-01-03t13:00:00.000",
+            "estimatedTime": "2025-01-03t12:52:00.000",
+            "actualTime": "2025-01-03t12:49:00.000",
+            "estimatedRunway": "2025-01-03t12:49:00.000",
+            "actualRunway": "2025-01-03t12:49:00.000"
+        },
+        "airline": {
+            "name": "southwest airlines",
+            "iataCode": "wn",
+            "icaoCode": "swa"
+        },
+        "flight": {
+            "number": "8511",
+            "iataNumber": "wn8511",
+            "icaoNumber": "swa8511"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "c",
+            "gate": "241b",
+            "delay": 38,
+            "scheduledTime": "2025-01-03t13:13:00.000",
+            "estimatedTime": "2025-01-03t13:51:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "3",
+            "gate": "e10",
+            "scheduledTime": "2025-01-03t14:20:00.000"
+        },
+        "airline": {
+            "name": "jetblue airways",
+            "iataCode": "b6",
+            "icaoCode": "jbu"
+        },
+        "flight": {
+            "number": "8501",
+            "iataNumber": "b68501",
+            "icaoNumber": "jbu8501"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "108",
+            "delay": 67,
+            "scheduledTime": "2025-01-03t19:15:00.000",
+            "estimatedTime": "2025-01-03t20:22:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "1",
+            "gate": "b9",
+            "scheduledTime": "2025-01-03t20:20:00.000"
+        },
+        "airline": {
+            "name": "southwest airlines",
+            "iataCode": "wn",
+            "icaoCode": "swa"
+        },
+        "flight": {
+            "number": "4665",
+            "iataNumber": "wn4665",
+            "icaoNumber": "swa4665"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "9",
+            "delay": 16,
+            "scheduledTime": "2025-01-03t20:33:00.000",
+            "estimatedTime": "2025-01-03t20:49:00.000",
+            "actualTime": "2025-01-03t20:49:00.000",
+            "estimatedRunway": "2025-01-03t20:49:00.000",
+            "actualRunway": "2025-01-03t20:49:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "4",
+            "gate": "g2",
+            "scheduledTime": "2025-01-03t21:48:00.000",
+            "estimatedTime": "2025-01-03t21:25:00.000"
+        },
+        "airline": {
+            "name": "spirit airlines",
+            "iataCode": "nk",
+            "icaoCode": "nks"
+        },
+        "flight": {
+            "number": "675",
+            "iataNumber": "nk675",
+            "icaoNumber": "nks675"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "8",
+            "delay": 13,
+            "scheduledTime": "2025-01-04t06:25:00.000",
+            "estimatedTime": "2025-01-04t06:38:00.000",
+            "actualTime": "2025-01-04t06:38:00.000",
+            "estimatedRunway": "2025-01-04t06:38:00.000",
+            "actualRunway": "2025-01-04t06:38:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "4",
+            "gate": "e8",
+            "scheduledTime": "2025-01-04t07:38:00.000",
+            "estimatedTime": "2025-01-04t07:16:00.000",
+            "actualTime": "2025-01-04t07:12:00.000",
+            "estimatedRunway": "2025-01-04t07:12:00.000",
+            "actualRunway": "2025-01-04t07:12:00.000"
+        },
+        "airline": {
+            "name": "spirit airlines",
+            "iataCode": "nk",
+            "icaoCode": "nks"
+        },
+        "flight": {
+            "number": "195",
+            "iataNumber": "nk195",
+            "icaoNumber": "nks195"
+        }
+    },
+    {
+        "type": "departure",
+        "status": "active",
+        "departure": {
+            "iataCode": "mco",
+            "icaoCode": "kmco",
+            "terminal": "a",
+            "gate": "129",
+            "delay": 60,
+            "scheduledTime": "2025-01-04t11:55:00.000",
+            "estimatedTime": "2025-01-04t12:55:00.000"
+        },
+        "arrival": {
+            "iataCode": "fll",
+            "icaoCode": "kfll",
+            "terminal": "1",
+            "gate": "a1",
+            "scheduledTime": "2025-01-04t13:10:00.000"
+        },
+        "airline": {
+            "name": "southwest airlines",
+            "iataCode": "wn",
+            "icaoCode": "swa"
+        },
+        "flight": {
+            "number": "2877",
+            "iataNumber": "wn2877",
+            "icaoNumber": "swa2877"
+        }
+    }
+]
