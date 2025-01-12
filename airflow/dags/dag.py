@@ -307,7 +307,57 @@ def load_flights_from_file(file_path: str) -> None:
         raise
 
 def clean_weather_data():
-    pass
+    """
+    Remove rows where:
+    - Wind doesn't end with "KT"
+    - Visibility doesn't end with "SM"
+    - Sky condition starts with a number
+    - Temperature doesn't start with a number
+    """
+    pg_hook = PostgresHook(postgres_conn_id=POSTGRES_CONNECTION_ID)
+    conn = pg_hook.get_conn()
+    cursor = conn.cursor()
+
+    try:
+        # Query to select rows where we will apply the checks
+        cursor.execute("SELECT id, wind, visibility, sky_condition, temperature FROM weather")
+        rows = cursor.fetchall()
+
+        # List to collect ids of rows that need to be deleted
+        rows_to_delete = []
+
+        for row in rows:
+            weather_id, wind, visibility, sky_condition, temperature = row
+
+            # Check each condition and if any are not met, mark for deletion
+            if not wind.endswith("KT"):
+                rows_to_delete.append(weather_id)
+            elif not visibility.endswith("SM"):
+                rows_to_delete.append(weather_id)
+            elif sky_condition[0].isdigit():  # Sky condition starts with a number
+                rows_to_delete.append(weather_id)
+            elif not temperature[0].isdigit():  # Temperature does not start with a number
+                rows_to_delete.append(weather_id)
+
+        # Delete the rows that do not meet the conditions
+        if rows_to_delete:
+            cursor.execute(
+                """
+                DELETE FROM weather
+                WHERE id IN %s
+                """, 
+                (tuple(rows_to_delete),)
+            )
+            conn.commit()
+
+        print(f"Cleaned up {len(rows_to_delete)} rows from the weather data.")
+
+    except Exception as e:
+        print(f"Error cleaning weather data: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
 
 def update_formatted_timestamps():
     from airflow.providers.postgres.hooks.postgres import PostgresHook
@@ -481,14 +531,14 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
         dag=global_dag,
     )
 
-    clean_weather_data = PythonOperator(
+    clean_weather_data_postgres = PythonOperator(
         task_id='clean_weather_data',
         python_callable=clean_weather_data,
         dag=global_dag,
     )
 
-    update_formatted_timestamps = PythonOperator(
-        task_id='update_formatted_timestamps',
+    format_weather_timestamp = PythonOperator(
+        task_id='format_weather_timestamp',
         python_callable=update_formatted_timestamps,
         dag=global_dag,
     )
@@ -519,7 +569,9 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
     [clean_flights_mco, clean_flights_fll] >> create_flights_table
     create_flights_table >> [load_flights_fll, load_flights_mco]
     create_weather_table >> load_weather_data_postgres
-    [load_flights_fll, load_flights_mco, load_weather_data_postgres] >> update_formatted_timestamps >> end
+    [load_flights_fll, load_flights_mco, load_weather_data_postgres] 
+    load_weather_data_postgres >> clean_weather_data_postgres >> format_weather_timestamp >> end
+    [load_flights_fll, load_flights_mco] >> end
     # join_weather_data >> end
 
 start = DummyOperator(
