@@ -214,11 +214,11 @@ def load_weather_data():
             
             insert_query = """
                 INSERT INTO weather (
-                    airport_icao, timestamp, wind
+                    airport_icao, timestamp, wind, visibility, sky_condition, temperature, altimeter
                 )
-                VALUES (%s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
-            cursor.execute(insert_query, (airport_icao, timestamp, wind))
+            cursor.execute(insert_query, (airport_icao, timestamp, wind, visibility, sky_condition, temperature, altimeter))
 
             
             # insert_query = """
