@@ -66,6 +66,7 @@ x-airflow-common: &airflow-common
     - ./plugins:/opt/airflow/plugins
     - ./config/airflow.cfg:/opt/airflow/airflow.cfg
     - ./.aviationedge:/opt/airflow/.aviationedge
+    - ./.aviationweather:/opt/airflow/.aviationweather
     - ./data:/opt/airflow/data
   user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-0}"
   depends_on:

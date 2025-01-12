@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS weather (
     id SERIAL PRIMARY KEY,
     airport_icao VARCHAR(10) NOT NULL,
     timestamp VARCHAR(10) NOT NULL,
-    formatted_timestamp VARCHAR(50),
+    formatted_timestamp TIMESTAMP,
     wind VARCHAR(10),
     visibility VARCHAR(10),
     sky_condition VARCHAR(20),

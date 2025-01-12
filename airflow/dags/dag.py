@@ -145,21 +145,29 @@ def ingest_weather_data(**kwargs):
 
         if PRODUCTION_MODE:
             # TO CHANGE!!!
-            api_url = 'https://aviationweather.gov/api/data/metar?ids=KMCO%2CKFLL&format=json&hours=168&date=20250104_235959Z'
+            api_url = 'https://aviationweather.gov/api/data/metar?ids=KMCO%2CKFLL&format=json&hours=216&date=20250101_235959Z'
+            
+            # Fetch data from the API
+            response = requests.get(api_url)
+            response.raise_for_status()  # Raise an error for bad status codes
+
+            # Parse the JSON response
+            weather_data = response.json()
+            print(f"Loaded {len(weather_data)} records from the API.")
+
+            # Write the fetched data to a temporary output file
+            with open(output_file_path, 'w') as f:
+                json.dump(weather_data, f, indent=4)
         else:
-            api_url = 'https://aviationweather.gov/api/data/metar?ids=KMCO%2CKFLL&format=json&hours=168&date=20250104_235959Z'
+            input_file_path = '.aviationweather/response.json'
+            with open(input_file_path, 'r') as f:
+                weather_data = json.load(f)
+            print(f"Loaded {len(weather_data)} records from local file.")
+            
+            # Write the data to the output file (you can skip or adjust this step as needed)
+            with open(output_file_path, 'w') as f:
+                json.dump(weather_data, f, indent=4)
 
-        # Fetch data from the API
-        response = requests.get(api_url)
-        response.raise_for_status()  # Raise an error for bad status codes
-
-        # Parse the JSON response
-        weather_data = response.json()
-        print(f"Loaded {len(weather_data)} records from the API.")
-
-        # Write the fetched data to a temporary output file
-        with open(output_file_path, 'w') as f:
-            json.dump(weather_data, f, indent=4)
     except Exception as e:
         print(f"Error while ingesting flight data: {e}")
         raise
@@ -261,7 +269,6 @@ def load_flights_from_file(file_path: str) -> None:
     """
     try:
         import json
-        from airflow.providers.postgres.hooks.postgres import PostgresHook
 
         # Load the JSON file
         with open(file_path, 'r') as f:
@@ -360,7 +367,6 @@ def clean_weather_data():
         conn.close()
 
 def update_formatted_timestamps():
-    from airflow.providers.postgres.hooks.postgres import PostgresHook
 
     pg_hook = PostgresHook(postgres_conn_id=POSTGRES_CONNECTION_ID)
     conn = pg_hook.get_conn()
@@ -390,7 +396,6 @@ def associate_weather_with_flights():
     Associate flights with the most recent weather data at the departure and arrival airports.
     """
     try:
-        from airflow.providers.postgres.hooks.postgres import PostgresHook
 
         # Establish connection to PostgreSQL
         pg_hook = PostgresHook(postgres_conn_id=POSTGRES_CONNECTION_ID)
@@ -407,8 +412,8 @@ def associate_weather_with_flights():
             # Find the most recent weather data for the departure airport
             departure_weather_query = """
                 SELECT id FROM weather
-                WHERE airport_icao = %s AND timestamp <= %s
-                ORDER BY timestamp DESC
+                WHERE airport_icao = %s AND formatted_timestamp <= %s
+                ORDER BY formatted_timestamp DESC
                 LIMIT 1
             """
             cursor.execute(departure_weather_query, (departure_icao, scheduled_time))
@@ -418,8 +423,8 @@ def associate_weather_with_flights():
             # Find the most recent weather data for the arrival airport
             arrival_weather_query = """
                 SELECT id FROM weather
-                WHERE airport_icao = UPPER(%s) AND timestamp <= %s
-                ORDER BY timestamp DESC
+                WHERE airport_icao = UPPER(%s) AND formatted_timestamp <= %s
+                ORDER BY formatted_timestamp DESC
                 LIMIT 1
             """
             cursor.execute(arrival_weather_query, (arrival_icao, scheduled_time))
@@ -543,20 +548,11 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
         dag=global_dag,
     )
 
-    # convert_flights_time_format = PostgresOperator(
-    #     task_id='convert_flights_time_format',
-    #     dag=global_dag,
-    #     postgres_conn_id=POSTGRES_CONNECTION_ID,
-    #     sql='sql/convert_flights_time_format.sql',
-    #     trigger_rule='none_failed',
-    #     autocommit=True,
-    # )
-
-    # join_weather_data = PythonOperator(
-    #     task_id='join_weather_data',
-    #     python_callable=associate_weather_with_flights,
-    #     dag=global_dag,
-    # )
+    join_weather_data = PythonOperator(
+        task_id='join_weather_data',
+        python_callable=associate_weather_with_flights,
+        dag=global_dag,
+    )
     
 
     end = DummyOperator(
@@ -570,9 +566,9 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
     create_flights_table >> [load_flights_fll, load_flights_mco]
     create_weather_table >> load_weather_data_postgres
     [load_flights_fll, load_flights_mco, load_weather_data_postgres] 
-    load_weather_data_postgres >> clean_weather_data_postgres >> format_weather_timestamp >> end
-    [load_flights_fll, load_flights_mco] >> end
-    # join_weather_data >> end
+    load_weather_data_postgres >> clean_weather_data_postgres >> format_weather_timestamp >> join_weather_data
+    [load_flights_fll, load_flights_mco] >> join_weather_data
+    join_weather_data >> end
 
 start = DummyOperator(
     task_id='start',
