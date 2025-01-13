@@ -145,7 +145,7 @@ def ingest_weather_data(**kwargs):
 
         if PRODUCTION_MODE:
             # TO CHANGE!!!
-            api_url = 'https://aviationweather.gov/api/data/metar?ids=KMCO%2CKFLL&format=json&hours=216&date=20250101_235959Z'
+            api_url = 'https://aviationweather.gov/api/data/metar?ids=KMCO%2CKFLL&format=json&hours=216&date=20250109_235959Z'
             
             # Fetch data from the API
             response = requests.get(api_url)
@@ -226,6 +226,7 @@ def load_weather_data():
 
         # Iterate through the JSON data
         for record in weather_data:
+            from datetime import datetime
             raw_ob = record.get("rawOb", "")
             
             # Parse rawOb
@@ -235,7 +236,8 @@ def load_weather_data():
                 continue
 
             airport_icao = parts[0]
-            timestamp = parts[1]
+            timestamp = record.get("receiptTime","")
+            iso_timestamp = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S").isoformat(timespec='milliseconds')
             wind = parts[2]
             visibility = parts[3]
             sky_condition = parts[4]
@@ -249,7 +251,7 @@ def load_weather_data():
                 )
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
-            cursor.execute(insert_query, (airport_icao, timestamp, wind, visibility, sky_condition, temperature, altimeter))
+            cursor.execute(insert_query, (airport_icao, iso_timestamp, wind, visibility, sky_condition, temperature, altimeter))
 
 
 
@@ -367,28 +369,34 @@ def clean_weather_data():
         conn.close()
 
 def update_formatted_timestamps():
-
+    """
+    Update the `scheduled_time` column in the `flights` table by replacing
+    lowercase 't' with uppercase 'T' in the timestamp format.
+    """
     pg_hook = PostgresHook(postgres_conn_id=POSTGRES_CONNECTION_ID)
     conn = pg_hook.get_conn()
     cursor = conn.cursor()
-    
-    cursor.execute("SELECT id, timestamp FROM weather WHERE formatted_timestamp IS NULL")
-    records = cursor.fetchall()
 
-    for record in records:
-        weather_id, timestamp = record
-        formatted_time = convert_timestamp_to_iso(timestamp)
+    try:
+        # Update the scheduled_time column
+        cursor.execute(
+            """
+            UPDATE flights
+            SET scheduled_time = REPLACE(scheduled_time, 't', 'T')
+            WHERE scheduled_time LIKE '%t%';
+            """
+        )
         
-        cursor.execute("""
-            UPDATE weather
-            SET formatted_timestamp = %s
-            WHERE id = %s
-        """, (formatted_time, weather_id))
-        
-    conn.commit()
-    cursor.close()
-    print("Formatted timestamps updated successfully.")
+        # Commit the changes
+        conn.commit()
+        print(f"Updated timestamps in the `flights` table.")
 
+    except Exception as e:
+        print(f"Error updating timestamps: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def associate_weather_with_flights():
@@ -412,8 +420,8 @@ def associate_weather_with_flights():
             # Find the most recent weather data for the departure airport
             departure_weather_query = """
                 SELECT id FROM weather
-                WHERE airport_icao = %s AND formatted_timestamp <= %s
-                ORDER BY formatted_timestamp DESC
+                WHERE airport_icao = UPPER(%s) AND timestamp <= %s
+                ORDER BY timestamp DESC
                 LIMIT 1
             """
             cursor.execute(departure_weather_query, (departure_icao, scheduled_time))
@@ -423,8 +431,8 @@ def associate_weather_with_flights():
             # Find the most recent weather data for the arrival airport
             arrival_weather_query = """
                 SELECT id FROM weather
-                WHERE airport_icao = UPPER(%s) AND formatted_timestamp <= %s
-                ORDER BY formatted_timestamp DESC
+                WHERE airport_icao = UPPER(%s) AND timestamp <= %s
+                ORDER BY timestamp DESC
                 LIMIT 1
             """
             cursor.execute(arrival_weather_query, (arrival_icao, scheduled_time))
@@ -448,7 +456,103 @@ def associate_weather_with_flights():
         print(f"Error associating weather with flights: {e}")
         raise
 
+def clean_flights_table():
+    """
+    Remove rows from the `flights` table where either `departure_weather_id`
+    or `destination_weather_id` is NULL.
+    """
+    pg_hook = PostgresHook(postgres_conn_id=POSTGRES_CONNECTION_ID)
+    conn = pg_hook.get_conn()
+    cursor = conn.cursor()
 
+    try:
+        # Execute the delete statement
+        cursor.execute(
+            """
+            DELETE FROM flights
+            WHERE departure_weather_id IS NULL
+               OR destination_weather_id IS NULL;
+            """
+        )
+        
+        # Commit the changes
+        conn.commit()
+        print("Rows with missing weather IDs removed successfully.")
+
+    except Exception as e:
+        print(f"Error removing rows: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
+
+def export_flights_with_weather(csv_file_path):
+    """
+    Export flight data with complete weather details for both departure and destination airports.
+    
+    Args:
+        csv_file_path (str): Path to save the generated CSV file.
+    """
+    import csv
+
+    pg_hook = PostgresHook(postgres_conn_id=POSTGRES_CONNECTION_ID)
+    conn = pg_hook.get_conn()
+    cursor = conn.cursor()
+
+    try:
+        # SQL query to join flights and weather data for departure and destination
+        query = """
+        SELECT 
+            f.id, 
+            f.scheduled_time, 
+            f.departure_icao, 
+            f.arrival_icao, 
+            f.delay_in_minutes, 
+            f.flight_status, 
+            f.airline, 
+            f.flight_number,
+            w1.wind AS departure_wind,
+            w1.visibility AS departure_visibility,
+            w1.sky_condition AS departure_sky_condition,
+            w1.temperature AS departure_temperature,
+            w1.altimeter AS departure_altimeter,
+            w2.wind AS destination_wind,
+            w2.visibility AS destination_visibility,
+            w2.sky_condition AS destination_sky_condition,
+            w2.temperature AS destination_temperature,
+            w2.altimeter AS destination_altimeter
+        FROM flights f
+        LEFT JOIN weather w1 ON f.departure_weather_id = w1.id
+        LEFT JOIN weather w2 ON f.destination_weather_id = w2.id
+        """
+
+        # Execute the query
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+        # Define the column headers
+        headers = [
+            "id", "scheduled_time", "departure_icao", "arrival_icao", "delay_in_minutes",
+            "flight_status", "airline", "flight_number", 
+            "departure_wind", "departure_visibility", "departure_sky_condition",
+            "departure_temperature", "departure_altimeter",
+            "destination_wind", "destination_visibility", "destination_sky_condition",
+            "destination_temperature", "destination_altimeter"
+        ]
+
+        # Write to a CSV file
+        with open(csv_file_path, mode="w", newline="") as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(headers)  # Write headers
+            writer.writerows(rows)  # Write data rows
+
+        print(f"CSV file exported successfully to {csv_file_path}")
+
+    except Exception as e:
+        print(f"Error exporting data: {e}")
+    finally:
+        cursor.close()
+        conn.close()
 
 # =================== Operators Definition ===================
 with TaskGroup("ingestion_pipeline",dag=global_dag) as ingestion_pipeline:
@@ -553,6 +657,12 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
         python_callable=associate_weather_with_flights,
         dag=global_dag,
     )
+
+    clean_flights = PythonOperator(
+        task_id='clean_flights',
+        python_callable=clean_flights_table,
+        dag=global_dag,
+    )
     
 
     end = DummyOperator(
@@ -568,7 +678,29 @@ with TaskGroup("staging_pipeline",dag=global_dag) as staging_pipeline:
     [load_flights_fll, load_flights_mco, load_weather_data_postgres] 
     load_weather_data_postgres >> clean_weather_data_postgres >> format_weather_timestamp >> join_weather_data
     [load_flights_fll, load_flights_mco] >> join_weather_data
-    join_weather_data >> end
+    join_weather_data >> clean_flights >> end
+
+with TaskGroup("production_pipeline",dag=global_dag) as production_pipeline:
+    start = DummyOperator(
+        task_id='start',
+        dag=global_dag,
+    )
+
+    generate_csv = PythonOperator(
+        task_id='generate_csv',
+        python_callable= lambda: export_flights_with_weather("data/production/flights.csv"),
+        dag=global_dag,
+    )
+
+    end = DummyOperator(
+        task_id='end',
+        dag=global_dag,
+        trigger_rule='all_success'
+    )
+
+    start >> generate_csv >> end
+
+
 
 start = DummyOperator(
     task_id='start',
@@ -582,7 +714,7 @@ end = DummyOperator(
     trigger_rule='all_success'
 )
 
-start >> ingestion_pipeline >> staging_pipeline >> end
+start >> ingestion_pipeline >> staging_pipeline >> production_pipeline >> end
 
 
 # =========================================================

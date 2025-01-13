@@ -22,6 +22,8 @@ Students: **Jean-Christophe Schmitt & Martin Nizon-Deladoeuille**
 | jupyter  | http://localhost:8888/ |              |
 | redis    | http://localhost:6379/ | redis:latest |
 
+Connect to postgres container: `docker exec -it airflow-postgres-1 psql -U airflow -d airflow`
+
 
 ### Abstract
 
