@@ -7,6 +7,10 @@ Students: **Jean-Christophe Schmitt & Martin Nizon-Deladoeuille**
 Pipeline:
     Read instructions from `airflow/README.md`
 
+After running the pipeline, the result file is located at `airflow/data/production/flights.csv`
+
+You can analyse the results with `analysis.ipynb`.
+
 ### Abstract
 
 ## Datasets Description 
