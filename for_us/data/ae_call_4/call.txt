@@ -1,1 +1,0 @@
-https://aviation-edge.com/v2/public/flightsHistory?key={API_KEY}&code=FLL&type=departure&date_from=2025-01-01&date_to=2025-01-09

@@ -1,6 +1,1 @@
-composer_inserts.sql
-intavolature_inserts.sql
-*.csv
-*.xlsx
-*~
 __pycache__

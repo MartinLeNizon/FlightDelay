@@ -1,11 +1,4 @@
-## Table of contents
-
-* What is Airflow?
-* What's the point of Airflow?
-* What can and can't it do?
-* The Dag
-* The Operators
-* Trigger Rules
+# Usage
 
 ## Requirements
 
@@ -24,16 +17,19 @@ id -u
 
 Now edit the **.env** file and swap out 501 for your own.
 
-Run the following command to creat the volumes needed in order to send data to airflow:
-```sh
-mkdir -p ./dags ./logs ./plugins
-```
-
 And this **once**:
 ```sh
 docker compose up airflow-init
 ```
 If the exit code is 0 then it's all good.
+
+### Mode
+
+Demo: don't change anything.
+
+Production : 
+    First, put your Aviation Edge API in .aviationedge/api.txt.
+    Then, in dags/dag.py, change `PRODUCTION_MODE = True`.
 
 ### Running
 
@@ -41,12 +37,23 @@ If the exit code is 0 then it's all good.
 docker compose up
 ```
 
-After it is up, add a new connection:
+Instead of doing `docker compose up airflow-init` followed by `docker compose up`, you can start `.\start.bat`.
 
-* Name - postgres_default
-* Conn type - postgres
-* Host - localhost
-* Port - 5432
-* Database - airflow
-* Username - airflow
-* Password - airflow
+
+You can now connect to [localhost:8080](http://localhost:8080/) to access the airflow dashboard, user and password are `airflow`.
+
+
+Now you must add a connection to the postgres SQL database. Navigate To the Admin -> Connections menu, then click the blue + button to add a new connection.
+
+Fill in the form like in the image ! (airflow/assets/postgres_connection.png)
+
+## Environment info
+| Service  | Address:Port           | Image        |
+| :------- | ---------------------- | ------------ |
+| postgres | http://localhost:5432/ | postgres:13  |
+| airflow  | http://localhost:8080/ |              |
+| jupyter  | http://localhost:8888/ |              |
+| redis    | http://localhost:6379/ | redis:latest |
+
+
+Connect to postgres container: `docker exec -it airflow-postgres-1 psql -U airflow -d airflow`

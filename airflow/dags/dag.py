@@ -23,7 +23,7 @@ INGESTION_DATA_PATH = 'data/ingestion/'
 STAGING_DATA_PATH = 'data/staging/'
 
 
-AVIATION_EDGE_API_KEY_PATH = '../.aviationedge/api.txt'
+AVIATION_EDGE_API_KEY_PATH = '.aviationedge/api.txt'
 
 INGESTED_FLIGHTS_PREFIX = 'flight_data_'
 
@@ -50,7 +50,7 @@ global_dag = DAG(
     dag_id='daily_flight_weather_ingestion',
     start_date=airflow.utils.dates.days_ago(0),
     default_args=default_args,
-    catchup=False,  # Prevent backfilling of DAG runs
+    catchup=False,
 )
 
 # =========================================================
@@ -94,6 +94,7 @@ def ingest_flight_data(airport_code):
 
         if PRODUCTION_MODE:
             import requests
+            from datetime import datetime, timedelta
 
             api_key_path = AVIATION_EDGE_API_KEY_PATH
             output_file_path = f'{INGESTION_DATA_PATH}{INGESTED_FLIGHTS_PREFIX}{airport_code}.json'  # Temporary location to store fetched data
@@ -101,8 +102,12 @@ def ingest_flight_data(airport_code):
             with open(api_key_path, 'r') as f:
                 api_key = f.read().strip()
 
-            # TO CHANGE!!!
-            api_url = f'https://aviation-edge.com/v2/public/flightsHistory?key={api_key}&code={airport_code}&type=departure&date_from=2024-12-29&date_to=2025-01-04'
+            # Calculate the date range: 15 days ago to 5 days ago
+            today = datetime.utcnow()
+            date_from = (today - timedelta(days=15)).strftime('%Y-%m-%d')
+            date_to = (today - timedelta(days=5)).strftime('%Y-%m-%d')
+
+            api_url = f'https://aviation-edge.com/v2/public/flightsHistory?key={api_key}&code={airport_code}&type=departure&date_from={date_from}&date_to={date_to}'
 
             # Fetch data from the API
             response = requests.get(api_url)
@@ -144,8 +149,13 @@ def ingest_weather_data(**kwargs):
         output_file_path = f'{INGESTION_DATA_PATH}{WEATHER_DATA_JSON}'
 
         if PRODUCTION_MODE:
-            # TO CHANGE!!!
-            api_url = 'https://aviationweather.gov/api/data/metar?ids=KMCO%2CKFLL&format=json&hours=216&date=20250109_235959Z'
+            from datetime import datetime, timedelta
+
+            # Calculate the date range: 15 days ago to 5 days ago
+            today = datetime.utcnow()
+            date = (today - timedelta(days=5)).strftime('%Y%m%d')
+            api_url = f'https://aviationweather.gov/api/data/metar?ids=KMCO%2CKFLL&format=json&hours=216&date={date}_235959Z'
+            # api_url = 'https://aviationweather.gov/api/data/metar?ids=KMCO%2CKFLL&format=json&hours=216&date=20250109_235959Z'
             
             # Fetch data from the API
             response = requests.get(api_url)
