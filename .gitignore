@@ -3,3 +3,4 @@ airflow/logs
 airflow/data/ingestion/*.json
 airflow/data/staging/*.json
 airflow/data/production/*.csv
+.trash
