@@ -9,7 +9,7 @@ Pipeline:
 
 After running the pipeline, the result file is located at `airflow/data/production/flights.csv`
 
-You can analyse the results with `analysis.ipynb`.
+To analyse the results, indications are in `analysis/README.md`.
 
 ### Abstract
 
