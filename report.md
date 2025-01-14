@@ -166,9 +166,11 @@ This plot helps to emphasize that airlines react differently to weather conditio
 
 ### Conclusion
 
-The findings of this analysis indicate that weather conditions, especially at either the departure or destination airport, have an observable impact on flight delays. However, some results were **unexpected**, such as flights in **good weather conditions** showing longer average delays compared to bad weather days in certain cases. This suggests that other factors, such as **operational inefficiencies**, **air traffic volume**, or **scheduling issues**, may play a significant role in causing delays, even in the absence of adverse weather.
+The findings of this analysis suggest that weather conditions at either the departure or destination airport correlate with flight delays, but their impact appears less significant than expected. Surprisingly, **flights in good weather conditions showed longer average delays** in some cases, indicating that **operational factors**, such as **air traffic management** or **scheduling inefficiencies**, likely played a larger role.
 
-While the analysis reveals valuable trends and insights, it is essential to interpret the results with caution due to the **limited dataset size** and the **short time frame** covered by the data. Despite these limitations, the findings provide a solid starting point for further research and emphasize the importance of considering multiple factors when analyzing flight delays.
+The **similar delay trends for both good and bad weather days** further suggest that the recorded weather alone was not a primary cause of delays during this period. These results highlight the need for **multi-variable analyses** to better understand the complex interplay of factors affecting flight punctuality.
+
+While the analysis reveals valuable trends and insights, it is essential to interpret the results with caution due to the **limited dataset size** and the **short time frame** covered by the data. Even with these limitations, the findings provide a solid starting point for further research and emphasize the importance of considering multiple factors when analyzing flight delays.
 
 ---
 
