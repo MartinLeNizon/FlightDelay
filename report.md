@@ -2,21 +2,32 @@
 
 ## Table of Contents
 - [Report: Flight Delay Analysis Project](#report-flight-delay-analysis-project)
-  - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Project Goals](#project-goals)
   - [Pipeline](#pipeline)
     - [Data Sources](#data-sources)
     - [Ingestion Phase](#ingestion-phase)
     - [Staging Phase](#staging-phase)
-      - [Data Cleansing](#data-cleansing)
+      - [Data Cleansing](#data-cleansing-before-loading-json-to-postgres)
       - [Data Transformations](#data-transformations)
-      - [Enrichments](#enrichments)
     - [Production Phase](#production-phase)
-      - [Analysis and Queries](#analysis-and-queries)
-  - [Findings](#findings)
+      - [CSV Export](#csv-export)
+      - [Analysis Ready Dataset](#analysis-ready-dataset)
+  - [Analysis and Queries](#analysis-and-queries)
+    - [Key Analyses Performed](#key-analyses-performed)
+      - [1. Impact of Bad Weather Conditions](#1-impact-of-bad-weather-conditions)
+      - [2. Categorizing Delay Types](#2-categorizing-delay-types)
+      - [3. Correlation Between Weather and Delays](#3-correlation-between-weather-and-delays)
+      - [4. Daily Delay Patterns](#4-daily-delay-patterns)
+      - [5. Average Delay by Airline under Bad Weather Conditions](#5-average-delay-by-airline-under-bad-weather-conditions)
+  - [Main Findings and Observations](#main-findings-and-observations)
+    - [1. Average Delay for Bad Weather at Either Departure or Destination](#1-average-delay-for-bad-weather-at-either-departure-or-destination)
+    - [2. Comparison of Average Flight Delay by Date (Good vs. Bad Weather)](#2-comparison-of-average-flight-delay-by-date-good-vs-bad-weather)
+    - [3. Average Delay by Airline under Bad Weather Conditions](#3-average-delay-by-airline-under-bad-weather-conditions)
+  - [Conclusion](#conclusion)
   - [Challenges Faced](#challenges-faced)
   - [Future Developments](#future-developments)
+
 
 ## Introduction
 This project focuses on analyzing airline flight delays and their correlation with weather conditions at both departure and destination airports. Delays in air travel are a significant concern for airlines and passengers, as they affect operational efficiency and customer satisfaction. Understanding the factors contributing to delays, particularly weather, can provide valuable insights for improving airline operations and passenger experience.
