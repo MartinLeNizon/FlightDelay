@@ -112,26 +112,26 @@ Our analysis was conducted on a dataset comprising detailed flight records and c
 
 ### Key Analyses Performed
 
-1. Impact of Bad Weather Conditions
+#### 1. Impact of Bad Weather Conditions
 We started by creating binary flags for **BadWeatherDeparture** and **BadWeatherDestination** and combined them to generate a **BadWeatherEither** metric. The average delays were then calculated under different weather conditions to analyze the extent to which bad weather influences delays.
 
-2. Categorizing Delay Types
+#### 2. Categorizing Delay Types
 Flight delays were categorized into **short delays** (<= 15 minutes), **moderate delays** (15-30 minutes), and **long delays** (> 30 minutes). We plotted the distribution of these delay types across various dates to observe how the severity of delays varied over time.
 
-3. Correlation Between Weather and Delays
+#### 3. Correlation Between Weather and Delays
 We computed the **normalized delay rate** by comparing the number of delayed flights to the total number of flights under both **good weather** and **bad weather** conditions. The results were visualized through bar plots showing the likelihood of delays in different weather scenarios.
 
-4. Daily Delay Patterns
+#### 4. Daily Delay Patterns
 We examined daily trends in average delays by grouping data by **date** and calculating the **mean delay** for each day. Using **seaborn line plots**, we visualized daily fluctuations in delays. Additionally, we separated these visualizations into two line plots: one for **good weather days** and another for **bad weather days**, followed by a combined comparison chart.
 
-5. Average Delay by Airline under Bad Weather Conditions
+#### 5. Average Delay by Airline under Bad Weather Conditions
 We finally grouped the data by airline and **BadWeatherEither** (a metric indicating bad weather at either the departure or destination airport) to calculate the **mean delay** for each airline in both **good** and **bad weather** conditions. This allowed us to observe how different airlines are affected by adverse weather conditions. The results were visualized using a **stacked bar plot**, showing the average delays experienced by each airline in both weather scenarios.
 
 
 ### Main Findings and Obersavtions
 This section presents three key findings from our analysis, focusing on how weather conditions impact flight delays across different airlines and time periods.
 
-1. Average Delay for Bad Weather at Either Departure or Destination
+#### 1. Average Delay for Bad Weather at Either Departure or Destination
 
 Our first key finding examines the **average flight delay** under **bad weather conditions** at either the **departure** or **destination airport**. The plot below shows that flights with **no bad weather (0)** experienced a longer average delay compared to flights with **bad weather (1)**.
 
@@ -141,7 +141,7 @@ The surprising insight here is that, on average, **flights with good weather had
 
 ---
 
-2. Comparison of Average Flight Delay by Date (Good vs. Bad Weather)
+#### 2. Comparison of Average Flight Delay by Date (Good vs. Bad Weather)
 
 Our second key finding examines the **average flight delays by date**, comparing delays observed on **good weather days** and **bad weather days**. The plot below shows the trend of **average delay times** over the analyzed time period, highlighting noticeable differences between flights operating in both weather scenarios.
 
@@ -155,7 +155,7 @@ Despite these variations, the **overall trends for good and bad weather days fol
 
 ---
 
-3. Average Delay by Airline under Bad Weather Conditions (Departure or Destination)
+#### 3. Average Delay by Airline under Bad Weather Conditions (Departure or Destination)
 
 Our final key finding shows the impact of **bad weather conditions** on the **average delay** experienced by different airlines. The plot below illustrates the **average delay (in minutes)** for each airline in both **good weather (0)** and **bad weather (1)** scenarios, where **bad weather** is defined as adverse weather conditions at either the departure or destination airport.
 
