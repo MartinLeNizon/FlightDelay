@@ -154,8 +154,7 @@ def ingest_weather_data(**kwargs):
             # Calculate the date range: 15 days ago to 5 days ago
             today = datetime.utcnow()
             date = (today - timedelta(days=5)).strftime('%Y%m%d')
-            api_url = f'https://aviationweather.gov/api/data/metar?ids=KMCO%2CKFLL&format=json&hours=216&date={date}_235959Z'
-            # api_url = 'https://aviationweather.gov/api/data/metar?ids=KMCO%2CKFLL&format=json&hours=216&date=20250109_235959Z'
+            api_url = f'https://aviationweather.gov/api/data/metar?ids=KMCO%2CKFLL&format=json&hours=216&date={date}_235959Z''
             
             # Fetch data from the API
             response = requests.get(api_url)
