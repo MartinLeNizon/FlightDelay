@@ -29,14 +29,14 @@ The data used in this project includes detailed flight records and weather infor
 ## Project Goals
 The project seeks to answer the following key questions:
 
-Which airlines experience the most delays?
-Identify the airlines with the highest frequency of delays to understand whether certain carriers face systemic issues.
+**To what extent do weather conditions at either the departure or destination airport correlate with flight delays?**
+This question aims to explore whether adverse weather conditions at any flight stage — departure or arrival — are associated with longer delays, and whether this relationship holds across the analyzed dataset.
 
-Do bad weather conditions at the departure airport increase delays?
-Examine whether factors such as high wind speeds, poor visibility, and adverse sky conditions contribute to delays when flights depart.
+**How do average flight delays vary between days with reported good weather and days with bad weather conditions?**
+By comparing delay trends on good weather days versus bad weather days, this question investigates whether there is a consistent pattern indicating that bad weather leads to increased delays, or if other operational factors play a more dominant role.
 
-Do bad weather conditions at the destination airport increase delays?
-Investigate how adverse weather conditions at arrival airports might correlate with delays.
+**Which airlines exhibit the highest delay times under varying weather conditions, and how do these airlines differ in their resilience to weather-related disruptions?**
+This question seeks to identify airline-specific patterns in delay behavior, particularly focusing on how delays vary between good and bad weather conditions, and whether certain airlines are better equipped to handle weather-related disruptions.
 
 ## Pipeline
 
