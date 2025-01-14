@@ -11,7 +11,9 @@ After running the pipeline, the result file is located at `airflow/data/producti
 
 To analyse the results, indications are in `analysis/README.md`.
 
-### Abstract
+Read the report in `report.md`
+
+<!--### Abstract
 
 ## Datasets Description 
 
@@ -19,7 +21,7 @@ To analyse the results, indications are in `analysis/README.md`.
 
 ## Requirements
 
-## Note for Students
+## Note for Students 
 
 * Clone the created repository offline;
 * Add your name and surname into the Readme file and your teammates as collaborators
@@ -27,5 +29,5 @@ To analyse the results, indications are in `analysis/README.md`.
 * Make any changes to your repository according to the specific assignment;
 * Ensure code reproducibility and instructions on how to replicate the results;
 * Add an open-source license, e.g., Apache 2.0;
-* README is automatically converted into pdf
+* README is automatically converted into pdf -->
 
