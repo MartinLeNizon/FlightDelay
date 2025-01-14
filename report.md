@@ -102,7 +102,7 @@ CSV Export:
 
 Analysis Ready Dataset:
 - The exported dataset served as the input for further analysis to answer the project's key questions, including:
-- Identifying airlines with the most delays.
+- Identifying airlines specific delays
 - Analyzing the correlation between weather conditions and delays.
 
 ## Analysis and Queries
