@@ -40,7 +40,7 @@ This question seeks to identify airline-specific patterns in delay behavior, par
 
 ## Pipeline
 
-![Pipeline graph](pipeline.png)
+![Pipeline graph](assets/pipeline.png)
 
 ### Data Sources
 The project utilizes two primary data sources:
@@ -128,7 +128,7 @@ We examined daily trends in average delays by grouping data by **date** and calc
 We finally grouped the data by airline and **BadWeatherEither** (a metric indicating bad weather at either the departure or destination airport) to calculate the **mean delay** for each airline in both **good** and **bad weather** conditions. This allowed us to observe how different airlines are affected by adverse weather conditions. The results were visualized using a **stacked bar plot**, showing the average delays experienced by each airline in both weather scenarios.
 
 
-### Main Findings and Obersavtions
+### Main Findings and Observations
 This section presents three key findings from our analysis, focusing on how weather conditions impact flight delays across different airlines and time periods.
 
 #### 1. Average Delay for Bad Weather at Either Departure or Destination
@@ -137,7 +137,7 @@ Our first key finding examines the **average flight delay** under **bad weather 
 
 The surprising insight here is that, on average, **flights with good weather had longer delays**. This suggests that factors other than weather, such as **operational issues**, **traffic volume**, or **scheduling inefficiencies**, could be playing a larger role in determining flight delays.
 
-![Average Delay for Bad Weather at Either Departure or Destination](Average_Delay_Either.png)
+![Average Delay for Bad Weather at Either Departure or Destination](assets/Average_Delay_Either.png)
 
 ---
 
@@ -151,7 +151,7 @@ The observed differences between weather scenarios suggest a **correlation betwe
 
 Despite these variations, the **overall trends for good and bad weather days follow a similar pattern**, with delays rising and falling in tandem across the analyzed period. This similarity in trends may indicate that **weather conditions did not play a dominant role in determining delays during this specific timeframe**. This observation aligns with our first finding, suggesting that **factors beyond weather conditions**, such as **operational, scheduling issues or other weather conditions that were not recorded**, may have had a more significant impact on flight delays during the analyzed period.
 
-![Comparison of Average Flight Delay by Date](Comparison_Flight_Delay_Time.png)
+![Comparison of Average Flight Delay by Date](assets/Comparison_Flight_Delay_Time.png)
 
 ---
 
@@ -165,7 +165,7 @@ The analysis highlights several key insights:
 
 This plot helps to emphasize that airlines react differently to weather conditions, and some airlines are more resilient to bad weather disruptions than others. The varying levels of delay indicate that weather preparedness strategies and operational efficiencies may vary significantly between carriers.
 
-![Average Delay by Airline under Bad Weather Conditions](Avg_Delay_by_Airline_Weather.png)
+![Average Delay by Airline under Bad Weather Conditions](assets/Avg_Delay_by_Airline_Weather.png)
 
 ### Conclusion
 
