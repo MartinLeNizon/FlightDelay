@@ -103,14 +103,78 @@ Analysis Ready Dataset:
 - Analyzing the correlation between weather conditions and delays.
 
 #### Analysis and Queries
-List the key analyses and queries performed to derive insights.  
---TODO--
+The analysis phase of our **Flight Delay Analysis Project** leveraged Python libraries such as **pandas**, **matplotlib**, and **seaborn** to explore the behavior of flight delays and their relationship with weather conditions at both departure and destination airports. We examined various dimensions of flight delays across airlines, weather metrics, and time intervals to gain insights into how adverse weather impacts airline punctuality.
 
-## Findings
-Summarize the key insights and findings from the analysis.  
---TODO--
+Our analysis was conducted on a dataset comprising detailed flight records and corresponding weather data for each flight’s departure and arrival points. The steps involved grouping and visualizing data to identify correlations and patterns related to delays and bad weather conditions. In this section we are presenting our five main analysis.
+
+## Key Analyses Performed
+
+### 1. Impact of Bad Weather Conditions
+We started by creating binary flags for **BadWeatherDeparture** and **BadWeatherDestination** and combined them to generate a **BadWeatherEither** metric. The average delays were then calculated under different weather conditions to analyze the extent to which bad weather influences delays.
+
+### 2. Categorizing Delay Types
+Flight delays were categorized into **short delays** (<= 15 minutes), **moderate delays** (15-30 minutes), and **long delays** (> 30 minutes). We plotted the distribution of these delay types across various dates to observe how the severity of delays varied over time.
+
+### 3. Correlation Between Weather and Delays
+We computed the **normalized delay rate** by comparing the number of delayed flights to the total number of flights under both **good weather** and **bad weather** conditions. The results were visualized through bar plots showing the likelihood of delays in different weather scenarios.
+
+### 4. Daily Delay Patterns
+We examined daily trends in average delays by grouping data by **date** and calculating the **mean delay** for each day. Using **seaborn line plots**, we visualized daily fluctuations in delays. Additionally, we separated these visualizations into two line plots: one for **good weather days** and another for **bad weather days**, followed by a combined comparison chart.
+
+### 5. Average Delay by Airline under Bad Weather Conditions
+We finally grouped the data by airline and **BadWeatherEither** (a metric indicating bad weather at either the departure or destination airport) to calculate the **mean delay** for each airline in both **good** and **bad weather** conditions. This allowed us to observe how different airlines are affected by adverse weather conditions. The results were visualized using a **stacked bar plot**, showing the average delays experienced by each airline in both weather scenarios.
+
+
+## Main Findings and Obersavtions
+This section presents the key findings from our analysis, focusing on how weather conditions impact flight delays across different airlines and time periods.
+
+### 1. Average Delay for Bad Weather at Either Departure or Destination
+
+Our first key finding examines the **average flight delay** under **bad weather conditions** at either the **departure** or **destination airport**. The plot below shows that flights with **no bad weather (0)** experienced a longer average delay compared to flights with **bad weather (1)**.
+
+The surprising insight here is that, on average, **flights with good weather had longer delays**. This suggests that factors other than weather, such as **operational issues**, **traffic volume**, or **scheduling inefficiencies**, could be playing a larger role in determining flight delays.
+
+![Average Delay for Bad Weather at Either Departure or Destination](Average_Delay_Either.png)
+
+---
+
+### 2. Comparison of Average Flight Delay by Date (Good vs. Bad Weather)
+
+Our second key finding examines the **average flight delays by date**, comparing delays experienced on **good weather days** and **bad weather days**. The plot below shows the trend of **average delay times** over the analyzed time period, highlighting the differences between flights operating in good and bad weather conditions.
+
+The key insights from this analysis include:
+- **Bad weather conditions** consistently result in **longer delays** compared to good weather conditions.
+- The difference in delays is most pronounced on certain days, such as **January 4th and 6th**, where bad weather resulted in **average delays exceeding 40 minutes**.
+- On days with **good weather**, the average delays remain relatively lower and more consistent.
+
+This plot helps us understand how weather impacts flight delays on a daily basis and emphasizes the need for airlines to account for weather conditions in their operational planning.
+
+![Comparison of Average Flight Delay by Date](Comparison_Flight_Delay_Time.png)
+
+---
+
+### 3. Average Delay by Airline under Bad Weather Conditions (Departure or Destination)
+
+Our final key finding shows the impact of **bad weather conditions** on the **average delay** experienced by different airlines. The plot below illustrates the **average delay (in minutes)** for each airline in both **good weather (0)** and **bad weather (1)** scenarios, where **bad weather** is defined as adverse weather conditions at either the departure or destination airport.
+
+The analysis highlights several key insights:
+- **Delta Air Lines**, **CSI Aviation**, and **Fly Alliance** show a noticeable increase in delays under bad weather conditions compared to good weather conditions.
+- Most of the other airlines have relatively consistent delay times, regardless of weather conditions, suggesting better handling of weather-related disruptions.
+
+This plot helps to emphasize that airlines react differently to weather conditions, and some airlines are more resilient to bad weather disruptions than others. The varying levels of delay indicate that weather preparedness strategies and operational efficiencies may vary significantly between carriers.
+
+![Average Delay by Airline under Bad Weather Conditions](Avg_Delay_by_Airline_Weather.png)
+
+## Conclusion
+
+The findings of this analysis indicate that weather conditions, especially at either the departure or destination airport, have an observable impact on flight delays. However, some results were **unexpected**, such as flights in **good weather conditions** showing longer average delays compared to bad weather days in certain cases. This suggests that other factors, such as **operational inefficiencies**, **air traffic volume**, or **scheduling issues**, may play a significant role in causing delays, even in the absence of adverse weather.
+
+While the analysis reveals valuable trends and insights, it is essential to interpret the results with caution due to the **limited dataset size** and the **short time frame** covered by the data. Despite these limitations, the findings provide a solid starting point for further research and emphasize the importance of considering multiple factors when analyzing flight delays.
+
+---
 
 ## Challenges Faced
+Despite the meaningful insights gained, several challenges were encountered during the analysis process.
 1. Data Accessibility: many APIs, such as the Aviation Edge API, require premium subscriptions for accessing historical data: we had to ask the saling team to get a free API key, which caused some delay in the project. Fortunately, the Aviation Weather API is free of charge.
 2. Parsing METAR Weather Information: METAR weather data is highly technical and requires significant domain knowledge to interpret, especially because some METAR data were not including the same fields (wind direction, visibility, sky condition, and temperature). We had to use regular expressions to parse specific patterns in METAR strings, and apply filtering logic to discard incomplete or malformed data entries, such as weather rows with missing values or unexpected formats.
 3. Correlation Analysis Challenges: The data set was relatively small, with only about 150 flights available for analysis over a 10-day period. It was impossible to take more data since the weather data before 2024-12-30 was not available. This limited the statistical power of our correlation analysis, making it difficult to draw robust conclusions about the relationships between flight delays and weather conditions. Since the focus was on a specific route or airport pair (MCO to FLL), the lack of diversity in routes further constrained the generalizability of the findings. Moreover, it would be more than useful if the flight dataset included the cause of delay. It would enable us to answer the question: "Are the delayed flights, publicly announced as delayed because of the weather, actually delayed because of the weather?"
