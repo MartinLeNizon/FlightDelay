@@ -105,7 +105,7 @@ Analysis Ready Dataset:
 ## Analysis and Queries
 The analysis phase of our **Flight Delay Analysis Project** leveraged Python libraries such as **pandas**, **matplotlib**, and **seaborn** to explore the behavior of flight delays and their relationship with weather conditions at both departure and destination airports. We examined various dimensions of flight delays across airlines, weather metrics, and time intervals to gain insights into how adverse weather impacts airline punctuality.
 
-Our analysis was conducted on a dataset comprising detailed flight records and corresponding weather data for each flight’s departure and arrival points. The steps involved grouping and visualizing data to identify correlations and patterns related to delays and bad weather conditions. In this section we are presenting our five main analysis.
+Our analysis was conducted on a dataset comprising detailed flight records and corresponding weather data for each flight’s departure and arrival points. The steps involved grouping and visualizing data to identify correlations and patterns related to delays and bad weather conditions. In this section we are presenting our five main analysis points or steps.
 
 ### Key Analyses Performed
 
@@ -126,7 +126,7 @@ We finally grouped the data by airline and **BadWeatherEither** (a metric indica
 
 
 ### Main Findings and Obersavtions
-This section presents the key findings from our analysis, focusing on how weather conditions impact flight delays across different airlines and time periods.
+This section presents three key findings from our analysis, focusing on how weather conditions impact flight delays across different airlines and time periods.
 
 #### 1. Average Delay for Bad Weather at Either Departure or Destination
 
@@ -140,14 +140,13 @@ The surprising insight here is that, on average, **flights with good weather had
 
 #### 2. Comparison of Average Flight Delay by Date (Good vs. Bad Weather)
 
-Our second key finding examines the **average flight delays by date**, comparing delays experienced on **good weather days** and **bad weather days**. The plot below shows the trend of **average delay times** over the analyzed time period, highlighting the differences between flights operating in good and bad weather conditions.
+Our second key finding examines the **average flight delays by date**, comparing delays observed on **good weather days** and **bad weather days**. The plot below shows the trend of **average delay times** over the analyzed time period, highlighting noticeable differences between flights operating in both weather scenarios.
 
-The key insights from this analysis include:
-- **Bad weather conditions** consistently result in **longer delays** compared to good weather conditions.
-- The difference in delays is most pronounced on certain days, such as **January 4th and 6th**, where bad weather resulted in **average delays exceeding 40 minutes**.
-- On days with **good weather**, the average delays remain relatively lower and more consistent.
+Interestingly, the analysis reveals a trend where **delays on bad weather days appear higher** than on good weather days, which at first glance seems contradictory to our first finding. However, it is important to consider the different methods used in these analyses. The bar chart in the first analysis shows **overall averages** for the entire dataset grouped by weather conditions, while this line plot highlights **daily variations** in delay times, providing a more granular view of the fluctuations over time.
 
-This plot helps us understand how weather impacts flight delays on a daily basis and emphasizes the need for airlines to account for weather conditions in their operational planning.
+The observed differences between weather scenarios suggest a **correlation between bad weather and increased delays on specific days**. However, it is essential to note that this analysis does not imply a direct causation. Instead, we observe that **delays tend to be longer on days with reported bad weather**, particularly on **January 4th and 6th**, which saw the highest delay averages.
+
+Despite these variations, the **overall trends for good and bad weather days follow a similar pattern**, with delays rising and falling in tandem across the analyzed period. This similarity in trends may indicate that **weather conditions did not play a dominant role in determining delays during this specific timeframe**. This observation aligns with our first finding, suggesting that **factors beyond weather conditions**, such as **operational, scheduling issues or other weather conditions that were not recorded**, may have had a more significant impact on flight delays during the analyzed period.
 
 ![Comparison of Average Flight Delay by Date](Comparison_Flight_Delay_Time.png)
 
